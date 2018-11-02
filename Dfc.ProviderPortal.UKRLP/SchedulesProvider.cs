@@ -15,7 +15,7 @@ namespace Dfc.ProviderPortal.UKRLP
 
             ProviderSynchronise ps = new ProviderSynchronise();
 
-            string output = ps.SynchroniseProviders();
+            string output = ps.SynchroniseProviders(); 
 
 
         }

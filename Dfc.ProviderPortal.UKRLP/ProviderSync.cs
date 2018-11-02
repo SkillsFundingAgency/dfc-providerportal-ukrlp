@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Net;
 using UKRLP.ProviderSynchronise;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Dfc.ProviderPortal.Providers
 {
@@ -21,9 +23,9 @@ namespace Dfc.ProviderPortal.Providers
 
             string output = ps.SynchroniseProviders();
 
+            //JsonConvert.DeserializeObject<Provider>(output);
 
-
-
+            var listProviders = JsonConvert.DeserializeObject<IEnumerable<Provider>>(output);
 
             return req.CreateResponse<string>(HttpStatusCode.OK, output);
         }

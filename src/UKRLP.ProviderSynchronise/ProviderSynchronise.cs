@@ -1,19 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿
+using Newtonsoft.Json;
 using ProviderService;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
+
 namespace UKRLP.ProviderSynchronise
 {
     public class ProviderSynchronise
     {
-        public string SynchroniseProviders()
+        //public string SynchroniseProviders()
+        public ProviderRecordStructure[] SynchroniseProviders()
         {
             return SynchroniseProviders(DateTime.Now.AddDays(-1));
         }
-        public string SynchroniseProviders(DateTime dtLastUpdate)
+        //public string SynchroniseProviders(DateTime dtLastUpdate)
+        public ProviderRecordStructure[] SynchroniseProviders(DateTime dtLastUpdate)
         {
             string[] statusesToFetch =
             {
@@ -34,16 +38,14 @@ namespace UKRLP.ProviderSynchronise
                 };
                 var retrieveall = new ProviderQueryPortTypeClient();
 
-
                 Task<response> x = retrieveall.retrieveAllProvidersAsync(request);
-
-
                 x.Wait();
 
-                return JsonConvert.SerializeObject(x.Result.ProviderQueryResponse.MatchingProviderRecords);
-
+                //return JsonConvert.SerializeObject(x.Result.ProviderQueryResponse.MatchingProviderRecords);
+                return x.Result.ProviderQueryResponse.MatchingProviderRecords;
             }
-            return string.Empty;
+            //return string.Empty;
+            return null;
         }
 
         private ProviderQueryStructure Request(DateTime dtLastUpdate)

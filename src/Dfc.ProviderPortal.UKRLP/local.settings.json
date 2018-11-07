@@ -5,6 +5,9 @@
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true"
   },
   "Storage": {
-    "StorageURI": "http://abc.com/xyz"
+    "StorageURI": "https://dfc-dev-providerportal-cdb.documents.azure.com/",
+    "PrimaryKey": "qXsndvyi2W1bmM8NL2pyYC3Q6w8rLFhrlYmYwK4NzXIUi5jbvN7JlUkAGWa8ZeT0un9JMzxz94MdVS48c5CNIg==",
+    "Database": "ukrlp",
+    "Collection": "ukrlp"
   }
 }

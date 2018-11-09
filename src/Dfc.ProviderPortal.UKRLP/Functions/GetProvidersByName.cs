@@ -14,22 +14,25 @@ using UKRLP.Storage;
 
 namespace Dfc.ProviderPortal.Providers
 {
-    public static class GetProviderByName
+    public static class GetProvidersByName
     {
-        [FunctionName("GetProviderByName")]
+        private class PostData {
+            public string Name { get; set; }
+        }
+
+        [FunctionName("GetProvidersByName")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req,
                                                           ILogger log)
         {
-            // Check argument
-            if (req.RequestUri.ParseQueryString()["Name"] == null)
-                throw new FunctionException("Missing Name argument", "GetProviderByName", null);
-
-            // Get argument
-            log.LogInformation($"C# HTTP trigger function processed GetProviderByName request for '{{Name}}'");
-            string Name = req.RequestUri.ParseQueryString()["Name"].ToString();
+            // Get passed argument (from query if present, if from JSON posted in body if not)
+            string name = req.RequestUri.ParseQueryString()["Name"]?.ToString()
+                            ?? (await req.Content.ReadAsAsync<PostData>())?.Name;
+            if (name == null)
+                throw new FunctionException("Missing name argument", "GetProviderByName", null);
 
             // Return matching providers
-            IEnumerable<Providers.Provider> p = new ProviderStorage().GetByName(Name, log, out long count);
+            log.LogInformation($"C# HTTP trigger function processed GetProviderByName request for '{name}'");
+            IEnumerable<Providers.Provider> p = new ProviderStorage().GetByName(name, log, out long count);
             log.LogInformation($"GetProviderByName returning {count} matching providers");
             return req.CreateResponse<string>(HttpStatusCode.OK, JsonConvert.SerializeObject(p));
         }

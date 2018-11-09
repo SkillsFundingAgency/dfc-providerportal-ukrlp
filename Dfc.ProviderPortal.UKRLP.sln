@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UKRLP.ProviderSynchronise",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.UKRLP", "src\Dfc.ProviderPortal.UKRLP\Dfc.ProviderPortal.UKRLP.csproj", "{688246F2-C9BC-439C-B0A3-BDD878DF00F8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfc.ProviderPortal.UKRLP.API", "src\Dfc.ProviderPortal.UKRLP.API\Dfc.ProviderPortal.UKRLP.API.csproj", "{0D93019E-C4CC-40AD-85C3-B64E5277CA8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{688246F2-C9BC-439C-B0A3-BDD878DF00F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{688246F2-C9BC-439C-B0A3-BDD878DF00F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{688246F2-C9BC-439C-B0A3-BDD878DF00F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D93019E-C4CC-40AD-85C3-B64E5277CA8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D93019E-C4CC-40AD-85C3-B64E5277CA8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D93019E-C4CC-40AD-85C3-B64E5277CA8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D93019E-C4CC-40AD-85C3-B64E5277CA8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

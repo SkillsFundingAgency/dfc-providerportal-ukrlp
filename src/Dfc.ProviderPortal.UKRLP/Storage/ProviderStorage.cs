@@ -38,11 +38,13 @@ namespace UKRLP.Storage
             try {
                 Task<ResourceResponse<Document>> task = null;
                 ResourceResponse<Document> createddocs;
+                int i = 0;
 
                 // Insert each provider in turn as a document
-                string database = JsonSettings.GetSetting("Storage:Database");
-                string collection = JsonSettings.GetSetting("Storage:Collection");
+                string database = SettingsHelper.Database;
+                string collection = SettingsHelper.Collection;
                 foreach (ProviderService.ProviderRecordStructure p in providers) {
+                    i++;
                     task = client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(database, collection),
                                                       p);
                 }

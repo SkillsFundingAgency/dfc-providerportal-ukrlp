@@ -16,8 +16,8 @@ namespace UKRLP.Storage
         /// <summary>
         /// CosmosDB connection created using settings
         /// </summary>
-        static public DocumentClient DocumentClient = new DocumentClient(new Uri(JsonSettings.GetSetting("Storage:StorageURI")),
-                                                                         JsonSettings.GetSetting("Storage:PrimaryKey")
+        static public DocumentClient DocumentClient = new DocumentClient(new Uri(SettingsHelper.StorageURI),
+                                                                         SettingsHelper.PrimaryKey
                                                                         );
         // Find collection to query
         static public DocumentCollection DocumentCollection = GetDocumentCollectionAsync().Result;
@@ -25,8 +25,8 @@ namespace UKRLP.Storage
         static public async Task<ResourceResponse<DocumentCollection>> GetDocumentCollectionAsync()
         {
             Task<ResourceResponse<DocumentCollection>> task = DocumentClient.ReadDocumentCollectionAsync(
-                                                                    UriFactory.CreateDocumentCollectionUri(JsonSettings.GetSetting("Storage:Database"),
-                                                                                                           JsonSettings.GetSetting("Storage:Collection")
+                                                                    UriFactory.CreateDocumentCollectionUri(SettingsHelper.Database,
+                                                                                                           SettingsHelper.Collection
                                                                                                          ));
             return task.Result;
         }

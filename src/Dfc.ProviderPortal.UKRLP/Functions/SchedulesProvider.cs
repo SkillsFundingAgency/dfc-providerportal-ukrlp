@@ -21,6 +21,7 @@ namespace Dfc.ProviderPortal.UKRLP
             ProviderSynchronise ps = new ProviderSynchronise();
             ProviderService.ProviderRecordStructure[] output = ps.SynchroniseProviders();
 
+            log.LogInformation($"Inserting {output.LongLength} providers to CosmosDB providers collection");
             Task<bool> task = new ProviderStorage().InsertDocs(output, log);
         }
     }

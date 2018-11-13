@@ -1,22 +1,21 @@
 ﻿
-using Newtonsoft.Json;
-using ProviderService;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using ProviderService;
+using Newtonsoft.Json;
 
 
 namespace UKRLP.ProviderSynchronise
 {
     public class ProviderSynchronise
     {
-        //public string SynchroniseProviders()
         public ProviderRecordStructure[] SynchroniseProviders()
         {
             return SynchroniseProviders(DateTime.Now.AddDays(-1));
         }
-        //public string SynchroniseProviders(DateTime dtLastUpdate)
+
         public ProviderRecordStructure[] SynchroniseProviders(DateTime dtLastUpdate)
         {
             string[] statusesToFetch =

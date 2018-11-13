@@ -36,22 +36,24 @@ namespace UKRLP.Storage
         {
             // Insert documents into collection
             try {
-                Task<ResourceResponse<Document>> task = null;
-                ResourceResponse<Document> createddocs;
-                int i = 0;
+                //Task<ResourceResponse<Document>> task = null;
+                //Task[] tasks = new Task[providers.Count()];
+                //int i = 0;
 
                 // Insert each provider in turn as a document
                 string database = SettingsHelper.Database;
                 string collection = SettingsHelper.Collection;
                 foreach (ProviderService.ProviderRecordStructure p in providers) {
-                    i++;
-                    task = client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(database, collection),
-                                                      p);
+                    Task<ResourceResponse<Document>> task = client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(database, collection),
+                                                                                       p);
+                    // TODO: Change to asynch operation
+                    // If we make too many attempts too quickly we and use Task.WaitAll below then hundreds of "Request rate is large" exceptions thrown
+                    await task;
+                    //tasks[i++] = task;
                 }
 
-                // Wait for the last to be inserted
-                if (task != null)
-                    createddocs = await task;
+                // Wait for all tasks to complete
+                //Task.WaitAll(tasks);
             }
             catch (DocumentClientException ex) {
                 Exception be = ex.GetBaseException();

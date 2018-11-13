@@ -25,6 +25,18 @@
       "metadata": {
         "description": "Connection string for the storage account to store function app "
       }
+    },
+    "cosmosDBfqdn": {
+      "type": "string",
+      "metadata": {
+        "description": "Cosmos DB account name in the format https://dfc-xxx-xxx-cdb.documents.azure.com/"
+      }
+    },
+    "cosmosDBkey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Cosmos DB access key"
+      }
     }
   },
   "variables": {
@@ -76,7 +88,8 @@
             "value": "[parameters('appServicePlanResourceGroup')]"
           },
           "functionAppAppSettings": {
-            "value": [{
+            "value": [
+              {
                 "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                 "value": "[reference('ppukrlpAppInsights').outputs.InstrumentationKey.value]"
               },
@@ -87,6 +100,22 @@
               {
                 "name": "AzureWebJobsStorage",
                 "value": "[parameters('storageConnectionString')]"
+              },
+              {
+                "name": "StorageURI",
+                "value": "[parameters('cosmosDBfqdn')]"
+              },
+              {
+                "name": "PrimaryKey",
+                "value": "[parameters('cosmosDBkey')]"
+              },
+              {
+                "name": "Database",
+                "value": "ukrlp"
+              },
+              {
+                "name": "Collection",
+                "value": "ukrlp"
               }
             ]
           }

@@ -19,13 +19,13 @@ namespace Dfc.ProviderPortal.Providers
     {
         [FunctionName("SyncProviders")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req,
-                                                          ILogger log)
+                                                          TraceWriter log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.Info("C# HTTP trigger function processed a request.");
             ProviderSynchronise ps = new ProviderSynchronise();
             ProviderService.ProviderRecordStructure[] output = ps.SynchroniseProviders(DateTime.MinValue);
 
-            log.LogInformation($"Inserting {output.LongLength} providers to CosmosDB providers collection");
+            log.Info($"Inserting {output.LongLength} providers to CosmosDB providers collection");
             Task<bool> task = new ProviderStorage().InsertDocs(output, log);
             task.Wait();
             return req.CreateResponse<string>(HttpStatusCode.OK, JsonConvert.SerializeObject(output));

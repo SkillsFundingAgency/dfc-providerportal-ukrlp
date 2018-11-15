@@ -14,14 +14,14 @@ namespace Dfc.ProviderPortal.UKRLP
     public static class SchedulesProviderSync
     {
         [FunctionName("ScheduledProviderDownload")]
-        public static void Run([TimerTrigger("0 0 */5 * * *")]TimerInfo myTimer, ILogger log)
+        public static void Run([TimerTrigger("0 0 */5 * * *")]TimerInfo myTimer, TraceWriter log)
         {
-            log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+            log.Info($"C# Timer trigger function executed at: {DateTime.Now}");
 
             ProviderSynchronise ps = new ProviderSynchronise();
             ProviderService.ProviderRecordStructure[] output = ps.SynchroniseProviders();
 
-            log.LogInformation($"Inserting {output.LongLength} providers to CosmosDB providers collection");
+            log.Info($"Inserting {output.LongLength} providers to CosmosDB providers collection");
             Task<bool> task = new ProviderStorage().InsertDocs(output, log);
         }
     }

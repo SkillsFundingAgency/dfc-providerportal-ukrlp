@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using Dfc.ProviderPortal.UKRLP;
 using Newtonsoft.Json;
@@ -31,8 +32,8 @@ namespace UKRLP.Storage
         /// Inserts passed objects as documents into CosmosDB collection
         /// </summary>
         /// <param name="providers">Provider data from service</param>
-        /// <param name="log">ILogger for logging info/errors</param>
-        public async Task<bool> InsertDocs(IEnumerable<ProviderService.ProviderRecordStructure> providers, ILogger log)
+        /// <param name="log">TraceWriter for logging info/errors</param>
+        public async Task<bool> InsertDocs(IEnumerable<ProviderService.ProviderRecordStructure> providers, TraceWriter log)
         {
             // Insert documents into collection
             try {
@@ -57,11 +58,11 @@ namespace UKRLP.Storage
             }
             catch (DocumentClientException ex) {
                 Exception be = ex.GetBaseException();
-                log.LogError(ex, $"Exception rasied at: {DateTime.Now}\n {be.Message}");
+                log.Error($"Exception rasied at: {DateTime.Now}\n {be.Message}", ex);
                 throw;
             } catch (Exception ex) {
                 Exception be = ex.GetBaseException();
-                log.LogError(ex, $"Exception rasied at: {DateTime.Now}\n {be.Message}");
+                log.Error($"Exception rasied at: {DateTime.Now}\n {be.Message}", ex);
                 throw;
             }
             finally {
@@ -72,17 +73,17 @@ namespace UKRLP.Storage
         /// <summary>
         /// Gets all documents from the collection and returns the data as Provider objects
         /// </summary>
-        /// <param name="log">ILogger for logging info/errors</param>
-        public async Task<IEnumerable<Provider>> GetAll(ILogger log)
+        /// <param name="log">TraceWriter for logging info/errors</param>
+        public async Task<IEnumerable<Provider>> GetAll(TraceWriter log)
         {
             // Get all provider documents in the collection
-            log.LogInformation("Getting all providers from collection");
+            log.Info("Getting all providers from collection");
             Task<FeedResponse<dynamic>> task = client.ReadDocumentFeedAsync(Collection.SelfLink, new FeedOptions { MaxItemCount = -1 });
             FeedResponse<dynamic> response = await task;
 
             // Collections are schema-less and can therefore hold any data, even though we're only storing Provider docs
             // So we can cast the returned data by serializing to json and then deserialising into Provider objects
-            log.LogInformation($"Serializing data for {response.LongCount()} providers");
+            log.Info($"Serializing data for {response.LongCount()} providers");
             string json = JsonConvert.SerializeObject(response);
             return JsonConvert.DeserializeObject<IEnumerable<Provider>>(json);
         }
@@ -91,11 +92,11 @@ namespace UKRLP.Storage
         /// Gets all documents with matching PRN from the collection and returns the data as Provider objects
         /// </summary>
         /// <param name="PRN">UKPRN to search by</param>
-        /// <param name="log">ILogger for logging info/errors</param>
-        public Provider GetByPRN(string PRN, ILogger log)
+        /// <param name="log">TraceWriter for logging info/errors</param>
+        public Provider GetByPRN(string PRN, TraceWriter log)
         {
             // Get matching provider by PRN from the collection
-            log.LogInformation($"Getting providers from collection with PRN {PRN}");
+            log.Info($"Getting providers from collection with PRN {PRN}");
             return client.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
                          .Where(p => p.UnitedKingdomProviderReferenceNumber == PRN)
                          .AsEnumerable()
@@ -106,11 +107,11 @@ namespace UKRLP.Storage
         /// Gets all documents with partial matching Name from the collection and returns the data as Provider objects
         /// </summary>
         /// <param name="Name">Name fragment to search by</param>
-        /// <param name="log">ILogger for logging info/errors</param>
-        public IEnumerable<Provider> GetByName(string Name, ILogger log, out long count)
+        /// <param name="log">TraceWriter for logging info/errors</param>
+        public IEnumerable<Provider> GetByName(string Name, TraceWriter log, out long count)
         {
             // Get matching provider by passed fragment of Name from the collection
-            log.LogInformation($"Getting providers from collection matching Name {Name}");
+            log.Info($"Getting providers from collection matching Name {Name}");
             IQueryable<Provider> qry = client.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
                                              .Where(p => p.ProviderName.ToLower().Contains(Name.ToLower()));
             IEnumerable<Provider> matches = qry.AsEnumerable();

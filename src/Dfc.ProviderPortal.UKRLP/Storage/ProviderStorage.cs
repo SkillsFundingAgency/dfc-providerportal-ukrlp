@@ -45,8 +45,29 @@ namespace UKRLP.Storage
                 string database = SettingsHelper.Database;
                 string collection = SettingsHelper.Collection;
                 foreach (ProviderService.ProviderRecordStructure p in providers) {
+
+                    // TODO: Change to use faster Upsert (which currently errors as doesn't like using UKPRN as PartitionKey)
+                    // Any docs with this PRN already in the database? Then delete them before re-adding the provider.
+                    IEnumerable<Document> docs = client.CreateDocumentQuery<Document>(Collection.SelfLink,
+                                                                           new SqlQuerySpec("SELECT * FROM ukrlp p WHERE p.UnitedKingdomProviderReferenceNumber = @UKPRN",
+                                                                                            new SqlParameterCollection(new[] {
+                                                                                                    new SqlParameter { Name = "@UKPRN", Value = p.UnitedKingdomProviderReferenceNumber }
+                                                                                            })),
+                                                        new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+                                                       //.Where(s => s.GetPropertyValue<string>("UnitedKingdomProviderReferenceNumber") == p.UnitedKingdomProviderReferenceNumber)  // bang!
+                                                       .AsEnumerable();
+                    if (docs.Any()) {
+                        foreach(Document d in docs)
+                            await client.DeleteDocumentAsync(d.SelfLink);
+                    }
+
+                    // Add provider doc to collection
+                    //Task<ResourceResponse<Document>> task = client.UpsertDocumentAsync(Collection.SelfLink,
+                    //                                                               p,
+                    //                                                               new RequestOptions { PartitionKey = new PartitionKey(p.UnitedKingdomProviderReferenceNumber) });
                     Task<ResourceResponse<Document>> task = client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(database, collection),
-                                                                                       p);
+                                                                                        p);
+
                     // TODO: Change to asynch operation
                     // If we make too many attempts too quickly we and use Task.WaitAll below then hundreds of "Request rate is large" exceptions thrown
                     task.Wait();

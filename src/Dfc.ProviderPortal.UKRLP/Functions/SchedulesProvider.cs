@@ -14,7 +14,7 @@ namespace Dfc.ProviderPortal.UKRLP
     public static class SchedulesProviderSync
     {
         [FunctionName("ScheduledProviderDownload")]
-        public static void Run([TimerTrigger("0 0 */5 * * *")]TimerInfo myTimer, TraceWriter log)
+        public static void Run([TimerTrigger("0 0 0 */1 * *")]TimerInfo myTimer, TraceWriter log)
         {
             log.Info($"C# Timer trigger function executed at: {DateTime.Now}");
 

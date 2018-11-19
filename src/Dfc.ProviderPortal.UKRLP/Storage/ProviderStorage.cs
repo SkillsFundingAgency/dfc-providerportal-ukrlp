@@ -49,7 +49,7 @@ namespace UKRLP.Storage
                                                                                        p);
                     // TODO: Change to asynch operation
                     // If we make too many attempts too quickly we and use Task.WaitAll below then hundreds of "Request rate is large" exceptions thrown
-                    await task;
+                    task.Wait();
                     //tasks[i++] = task;
                 }
 
@@ -118,18 +118,18 @@ namespace UKRLP.Storage
                                                                         UriFactory.CreateDocumentCollectionUri(dbname, colname));
                 task.Wait();
                 DocumentCollection dc = task.Result;
-                log.Info($"Using DocumentCollection with SelfLink {dc.SelfLink}");
+                log.Info($"Using DocumentCollection with SelfLink {dc?.SelfLink}");
 
                 FeedOptions fo = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
-                log.Info($"Using FeedOptions with hash {fo.GetHashCode().ToString()}");
+                log.Info($"Using FeedOptions with hash {fo?.GetHashCode().ToString()}");
 
-                IOrderedQueryable<Provider> q = cli.CreateDocumentQuery<Provider>(dc.SelfLink, fo);
-                log.Info($"IQueryable created with hash {q.GetHashCode().ToString()}");
+                IOrderedQueryable<Provider> q = cli.CreateDocumentQuery<Provider>(dc?.SelfLink, fo);
+                log.Info($"IQueryable created with hash {q?.GetHashCode().ToString()}");
 
-                Provider p = q.Where(r => r.UnitedKingdomProviderReferenceNumber == PRN)
+                Provider p = q?.Where(r => r.UnitedKingdomProviderReferenceNumber == PRN)
                              .AsEnumerable()
                              .FirstOrDefault();
-                log.Info($"ProviderStorage returning provider with name '{p.ProviderName}'");
+                log.Info($"ProviderStorage returning provider with name '{p?.ProviderName}'");
                 return p;
 
             } catch (Exception ex) {

@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using UKRLP.ProviderSynchronise;
@@ -30,11 +31,16 @@ namespace Dfc.ProviderPortal.Providers
             if (name == null)
                 throw new FunctionException("Missing name argument", "GetProviderByName", null);
 
-            // Return matching providers
+            // Find matching providers
             log.Info($"C# HTTP trigger function processed GetProviderByName request for '{name}'");
             IEnumerable<Providers.Provider> p = new ProviderStorage().GetByName(name, log, out long count);
+
+            // Return results
             log.Info($"GetProviderByName returning {count} matching providers");
-            return req.CreateResponse<string>(HttpStatusCode.OK, JsonConvert.SerializeObject(p));
+            //return req.CreateResponse<string>(HttpStatusCode.OK, JsonConvert.SerializeObject(p));
+            HttpResponseMessage response = req.CreateResponse(HttpStatusCode.OK);
+            response.Content = new StringContent(JsonConvert.SerializeObject(p), Encoding.UTF8, "application/json");
+            return response;
         }
     }
 }

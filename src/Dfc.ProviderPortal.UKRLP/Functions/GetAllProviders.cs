@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using UKRLP.ProviderSynchronise;
@@ -23,7 +24,13 @@ namespace Dfc.ProviderPortal.Providers
             log.Info("C# HTTP trigger function processed GetAllProviders request");
             Task<IEnumerable<Providers.Provider>> task = new ProviderStorage().GetAll(log);
             task.Wait();
-            return req.CreateResponse<string>(HttpStatusCode.OK, JsonConvert.SerializeObject(task.Result));
+
+            // Return results
+            log.Info($"GetAllProviders returning results");
+            //return req.CreateResponse<string>(HttpStatusCode.OK, JsonConvert.SerializeObject(task.Result));
+            HttpResponseMessage response = req.CreateResponse(HttpStatusCode.OK);
+            response.Content = new StringContent(JsonConvert.SerializeObject(task.Result), Encoding.UTF8, "application/json");
+            return response;
         }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using UKRLP.ProviderSynchronise;
@@ -31,11 +32,15 @@ namespace Dfc.ProviderPortal.Providers
             if (PRN == null)
                 throw new FunctionException("Missing PRN argument", "GetProviderByPRN", null);
 
-            // Return matching providers
+            // Find matching provider
             log.Info($"C# HTTP trigger function processed GetProviderByPRN request for PRN '{PRN}'");
             Providers.Provider p = new ProviderStorage().GetByPRN(PRN, log);
-            log.Info($"GetProviderByPRN request ending");
-            return req.CreateResponse<string>(HttpStatusCode.OK, JsonConvert.SerializeObject(p));
+
+            // Return results
+            log.Info($"GetProviderByPRN returning { p?.ProviderName }");
+            HttpResponseMessage response = req.CreateResponse(HttpStatusCode.OK);
+            response.Content = new StringContent(JsonConvert.SerializeObject(p), Encoding.UTF8, "application/json");
+            return response;
         }
     }
 }

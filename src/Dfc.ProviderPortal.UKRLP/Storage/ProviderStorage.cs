@@ -117,51 +117,51 @@ namespace UKRLP.Storage
         public Provider GetByPRN(string PRN, TraceWriter log)
         {
             try {
-                // Get matching provider by PRN from the collection //
-                log.Info($"Getting providers from collection with PRN {PRN}");
+                //// Get matching provider by PRN from the collection //
+                //log.Info($"Getting providers from collection with PRN {PRN}");
 
-                string uri = SettingsHelper.StorageURI;
-                log.Info($"Using URI ending {uri.Substring(uri.Length - 15)}");
+                //string uri = SettingsHelper.StorageURI;
+                //log.Info($"Using URI ending {uri.Substring(uri.Length - 15)}");
 
-                string pk = SettingsHelper.PrimaryKey;
-                //log.Info($"Using PK ending {pk.Substring(pk.Length - 6)}");
+                //string pk = SettingsHelper.PrimaryKey;
+                ////log.Info($"Using PK ending {pk.Substring(pk.Length - 6)}");
 
-                string dbname = SettingsHelper.Database;
-                log.Info($"Using database starting {dbname.Substring(0,3)}");
+                //string dbname = SettingsHelper.Database;
+                //log.Info($"Using database starting {dbname.Substring(0,3)}");
 
-                string colname = SettingsHelper.Collection;
-                log.Info($"Using collection starting {colname.Substring(0, 3)}");
+                //string colname = SettingsHelper.Collection;
+                //log.Info($"Using collection starting {colname.Substring(0, 3)}");
 
-                DocumentClient cli = new DocumentClient(new Uri(uri), pk);
-                log.Info($"Using DocumentClient with hash {cli.GetHashCode().ToString()}");
+                //DocumentClient cli = new DocumentClient(new Uri(uri), pk);
+                //log.Info($"Using DocumentClient with hash {cli.GetHashCode().ToString()}");
 
-                Task<ResourceResponse<DocumentCollection>> task = cli.ReadDocumentCollectionAsync(
-                                                                        UriFactory.CreateDocumentCollectionUri(dbname, colname));
-                task.Wait();
-                DocumentCollection dc = task.Result;
-                log.Info($"Using DocumentCollection with SelfLink {dc?.SelfLink}");
+                //Task<ResourceResponse<DocumentCollection>> task = cli.ReadDocumentCollectionAsync(
+                //                                                        UriFactory.CreateDocumentCollectionUri(dbname, colname));
+                //task.Wait();
+                //DocumentCollection dc = task.Result;
+                //log.Info($"Using DocumentCollection with SelfLink {dc?.SelfLink}");
 
-                FeedOptions fo = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
-                log.Info($"Using FeedOptions with hash {fo?.GetHashCode().ToString()}");
+                //FeedOptions fo = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
+                //log.Info($"Using FeedOptions with hash {fo?.GetHashCode().ToString()}");
 
-                IOrderedQueryable<Provider> q = cli.CreateDocumentQuery<Provider>(dc?.SelfLink, fo);
-                log.Info($"IQueryable created with hash {q?.GetHashCode().ToString()}");
+                //IOrderedQueryable<Provider> q = cli.CreateDocumentQuery<Provider>(dc?.SelfLink, fo);
+                //log.Info($"IQueryable created with hash {q?.GetHashCode().ToString()}");
 
-                Provider p = q?.Where(r => r.UnitedKingdomProviderReferenceNumber == PRN)
+                //Provider p = q?.Where(r => r.UnitedKingdomProviderReferenceNumber == PRN)
+                //             .AsEnumerable()
+                //             .FirstOrDefault();
+                //log.Info($"ProviderStorage returning provider with name '{p?.ProviderName}'");
+                //return p;
+
+                return client.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+                             .Where(p => p.UnitedKingdomProviderReferenceNumber == PRN)
                              .AsEnumerable()
                              .FirstOrDefault();
-                log.Info($"ProviderStorage returning provider with name '{p?.ProviderName}'");
-                return p;
 
             } catch (Exception ex) {
                 log.Error("Exception thrown in GetByPRN", ex, "GetByPRN");
                 throw ex;
             }
-
-            //return client.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
-            //             .Where(p => p.UnitedKingdomProviderReferenceNumber == PRN)
-            //             .AsEnumerable()
-            //             .FirstOrDefault();
         }
 
         /// <summary>
@@ -171,13 +171,19 @@ namespace UKRLP.Storage
         /// <param name="log">TraceWriter for logging info/errors</param>
         public IEnumerable<Provider> GetByName(string Name, TraceWriter log, out long count)
         {
-            // Get matching provider by passed fragment of Name from the collection
-            log.Info($"Getting providers from collection matching Name {Name}");
-            IQueryable<Provider> qry = client.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
-                                             .Where(p => p.ProviderName.ToLower().Contains(Name.ToLower()));
-            IEnumerable<Provider> matches = qry.AsEnumerable();
-            count = matches.LongCount();
-            return matches;
+            try {
+                // Get matching provider by passed fragment of Name from the collection
+                log.Info($"Getting providers from collection matching Name {Name}");
+                IQueryable<Provider> qry = client.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+                                                 .Where(p => p.ProviderName.ToLower().Contains(Name.ToLower()));
+                IEnumerable<Provider> matches = qry.AsEnumerable();
+                count = matches.LongCount();
+                return matches;
+
+            } catch (Exception ex) {
+                log.Error("Exception thrown in GetByName", ex, "GetByName");
+                throw ex;
+            }
         }
     }
 }

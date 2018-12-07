@@ -19,11 +19,11 @@ namespace DFC.ProviderPortal.Providers.Tests.ProviderTests
         private const string URI_PATH = "http://localhost:7071/api/";
         private const long EXPECTED_COUNT = 15979;
 
-        private const string VENUE_BY_ID = "{ \"id\": \"e3f1acbc-9eb2-4c38-81ec-fb2feb270035\" }";
-        private const string VENUE_BY_PRN = "{ \"PRN\": 123456789 }";
-        private const string VENUE_BY_PRN_AND_NAME = "{" +
-                                                     "  \"PRN\": 123456789," +
-                                                     "  \"Name\": \"My fab Provider\" }";
+        private const string PROVIDER_BY_ID = "{ \"id\": \"e3f1acbc-9eb2-4c38-81ec-fb2feb270035\" }";
+        private const string PROVIDER_BY_PRN = "{ \"PRN\": 12345678 }";
+        private const string PROVIDER_BY_PRN_AND_NAME = "{" +
+                                                     "  \"PRN\": 12345678," +
+                                                     "  \"Name\": \"My Provider\" }";
 
         public GetProvidersTests()
         {
@@ -35,10 +35,10 @@ namespace DFC.ProviderPortal.Providers.Tests.ProviderTests
         public void RunTests()
         {
             _GetAllProviders_ReturnsResults();
-            //_GetAllVenues_ExpectedCount();
-            //_GetVenueById_Run();
-            //_GetVenuesByPRN_Run();
-            //_GetVenuesByPRNAndName_Run();
+            //_GetAllProviders_ExpectedCount();
+            //_GetProviderById_Run();
+            //_GetProviderByPRN_Run();
+            //_GetProviderByPRNAndName_Run();
             Assert.True(true);
         }
 
@@ -53,43 +53,42 @@ namespace DFC.ProviderPortal.Providers.Tests.ProviderTests
 
             _providers = TestHelper.GetAFReturnedObjects<Provider>(task);
             Assert.True(_providers.Any());
-            //Assert.All<Venue>(venues, v => Guid.TryParse(v.id.ToString(), out Guid g));
         }
 
         //[Fact]
-        //public void _GetVenuesByPRN_Run()
+        //public void _GetProviderByPRN_Run()
         //{
-        //    System.Net.Http.HttpRequestMessage rm = TestHelper.CreateRequest(new Uri(URI_PATH + "GetVenueById"),
-        //                                                                     VENUE_BY_PRN);
-        //    Task<HttpResponseMessage> task = GetVenuesByPRN.Run(rm, new LogHelper((ILogger)null));
+        //    System.Net.Http.HttpRequestMessage rm = TestHelper.CreateRequest(new Uri(URI_PATH + "GetProviderByPRN"),
+        //                                                                     PROVIDER_BY_PRN);
+        //    Task<HttpResponseMessage> task = GetProviderByPRN.Run(rm, new LogHelper((ILogger)null));
         //    _providers = TestHelper.GetAFReturnedObjects<Provider>(task);
 
         //    Assert.True(_providers.Any());
         //}
 
         //[Fact]
-        //public void _GetVenuesByPRNAndName_Run()
+        //public void _GetProviderByPRNAndName_Run()
         //{
-        //    System.Net.Http.HttpRequestMessage rm = TestHelper.CreateRequest(new Uri(URI_PATH + "GetVenueById"),
-        //                                                                     VENUE_BY_PRN_AND_NAME);
-        //    Task<HttpResponseMessage> task = GetVenuesByPRNAndName.Run(rm, new LogHelper((ILogger)null));
+        //    System.Net.Http.HttpRequestMessage rm = TestHelper.CreateRequest(new Uri(URI_PATH + "GetProviderByPRNAndName"),
+        //                                                                     PROVIDER_BY_PRN_AND_NAME);
+        //    Task<HttpResponseMessage> task = GetProviderByPRNAndName.Run(rm, new LogHelper((ILogger)null));
         //    _providers = TestHelper.GetAFReturnedObjects<Provider>(task);
 
         //    Assert.True(_providers.Any());
         //}
 
         //[Fact]
-        //public void _GetAllVenues_ExpectedCount()
+        //public void _GetAllProviders_ExpectedCount()
         //{
         //    Assert.True(_providers.LongCount() == EXPECTED_COUNT);
         //}
 
         //[Fact]
-        //public void _GetVenueById_Run()
+        //public void _GetProviderById_Run()
         //{
-        //    System.Net.Http.HttpRequestMessage rm = TestHelper.CreateRequest(new Uri(URI_PATH + "GetVenueById"),
-        //                                                                     VENUE_BY_ID);
-        //    Task<HttpResponseMessage> task = GetVenueById.Run(rm, new LogHelper((ILogger)null));
+        //    System.Net.Http.HttpRequestMessage rm = TestHelper.CreateRequest(new Uri(URI_PATH + "GetProviderById"),
+        //                                                                     PROVIDER_BY_ID);
+        //    Task<HttpResponseMessage> task = GetProviderById.Run(rm, new LogHelper((ILogger)null));
         //    Provider provider = TestHelper.GetAFReturnedObject<Provider>(task);
 
         //    Assert.True(provider != null);

@@ -95,16 +95,16 @@ namespace UKRLP.Storage
         /// Gets all documents from the collection and returns the data as Provider objects
         /// </summary>
         /// <param name="log">TraceWriter for logging info/errors</param>
-        public async Task<IEnumerable<Provider>> GetAll(TraceWriter log)
+        public async Task<IEnumerable<Provider>> GetAll(ILogger log)
         {
             // Get all provider documents in the collection
-            log.Info("Getting all providers from collection");
+            log.LogInformation("Getting all providers from collection");
             Task<FeedResponse<dynamic>> task = client.ReadDocumentFeedAsync(Collection.SelfLink, new FeedOptions { MaxItemCount = -1 });
             FeedResponse<dynamic> response = await task;
 
             // Collections are schema-less and can therefore hold any data, even though we're only storing Provider docs
             // So we can cast the returned data by serializing to json and then deserialising into Provider objects
-            log.Info($"Serializing data for {response.LongCount()} providers");
+            log.LogInformation($"Serializing data for {response.LongCount()} providers");
             string json = JsonConvert.SerializeObject(response);
             return JsonConvert.DeserializeObject<IEnumerable<Provider>>(json);
         }
@@ -114,7 +114,7 @@ namespace UKRLP.Storage
         /// </summary>
         /// <param name="PRN">UKPRN to search by</param>
         /// <param name="log">TraceWriter for logging info/errors</param>
-        public Provider GetByPRN(string PRN, TraceWriter log)
+        public Provider GetByPRN(string PRN, ILogger log)
         {
             try {
                 //// Get matching provider by PRN from the collection //
@@ -159,7 +159,7 @@ namespace UKRLP.Storage
                              .FirstOrDefault();
 
             } catch (Exception ex) {
-                log.Error("Exception thrown in GetByPRN", ex, "GetByPRN");
+                log.LogError("Exception thrown in GetByPRN", ex, "GetByPRN");
                 throw ex;
             }
         }
@@ -169,11 +169,11 @@ namespace UKRLP.Storage
         /// </summary>
         /// <param name="Name">Name fragment to search by</param>
         /// <param name="log">TraceWriter for logging info/errors</param>
-        public IEnumerable<Provider> GetByName(string Name, TraceWriter log, out long count)
+        public IEnumerable<Provider> GetByName(string Name, ILogger log, out long count)
         {
             try {
                 // Get matching provider by passed fragment of Name from the collection
-                log.Info($"Getting providers from collection matching Name {Name}");
+                log.LogInformation($"Getting providers from collection matching Name {Name}");
                 IQueryable<Provider> qry = client.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
                                                  .Where(p => p.ProviderName.ToLower().Contains(Name.ToLower()));
                 IEnumerable<Provider> matches = qry.AsEnumerable();
@@ -181,7 +181,7 @@ namespace UKRLP.Storage
                 return matches;
 
             } catch (Exception ex) {
-                log.Error("Exception thrown in GetByName", ex, "GetByName");
+                log.LogError("Exception thrown in GetByName", ex, "GetByName");
                 throw ex;
             }
         }

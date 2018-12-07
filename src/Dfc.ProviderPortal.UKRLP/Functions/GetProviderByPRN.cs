@@ -23,21 +23,21 @@ namespace Dfc.ProviderPortal.Providers
 
         [FunctionName("GetProviderByPRN")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req,
-                                                          TraceWriter log)
+                                                          ILogger log)
         {
             // Get passed argument (from query if present, if from JSON posted in body if not)
-            log.Info($"GetProviderByPRN starting");
+            log.LogInformation($"GetProviderByPRN starting");
             string PRN = req.RequestUri.ParseQueryString()["PRN"]?.ToString()
                             ?? (await req.Content.ReadAsAsync<PostData>())?.PRN;
             if (PRN == null)
                 throw new FunctionException("Missing PRN argument", "GetProviderByPRN", null);
 
             // Find matching provider
-            log.Info($"C# HTTP trigger function processed GetProviderByPRN request for PRN '{PRN}'");
+            log.LogInformation($"C# HTTP trigger function processed GetProviderByPRN request for PRN '{PRN}'");
             Providers.Provider p = new ProviderStorage().GetByPRN(PRN, log);
 
             // Return results
-            log.Info($"GetProviderByPRN returning { p?.ProviderName }");
+            log.LogInformation($"GetProviderByPRN returning { p?.ProviderName }");
             HttpResponseMessage response = req.CreateResponse(HttpStatusCode.OK);
             response.Content = new StringContent(JsonConvert.SerializeObject(p), Encoding.UTF8, "application/json");
             return response;

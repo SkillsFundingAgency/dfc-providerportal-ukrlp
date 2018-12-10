@@ -32,8 +32,8 @@ namespace UKRLP.Storage
         /// Inserts passed objects as documents into CosmosDB collection
         /// </summary>
         /// <param name="providers">Provider data from service</param>
-        /// <param name="log">TraceWriter for logging info/errors</param>
-        public async Task<bool> InsertDocs(IEnumerable<ProviderService.ProviderRecordStructure> providers, TraceWriter log)
+        /// <param name="log">ILogger for logging info/errors</param>
+        public async Task<bool> InsertDocs(IEnumerable<ProviderService.ProviderRecordStructure> providers, ILogger log)
         {
             // Insert documents into collection
             try {
@@ -66,7 +66,7 @@ namespace UKRLP.Storage
                     //                                                               p,
                     //                                                               new RequestOptions { PartitionKey = new PartitionKey(p.UnitedKingdomProviderReferenceNumber) });
                     Task<ResourceResponse<Document>> task = client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(database, collection),
-                                                                                        p);
+                                                                                       p);
 
                     // TODO: Change to asynch operation
                     // If we make too many attempts too quickly we and use Task.WaitAll below then hundreds of "Request rate is large" exceptions thrown
@@ -79,11 +79,11 @@ namespace UKRLP.Storage
             }
             catch (DocumentClientException ex) {
                 Exception be = ex.GetBaseException();
-                log.Error($"Exception rasied at: {DateTime.Now}\n {be.Message}", ex);
+                log.LogError(ex, $"Exception rasied at: {DateTime.Now}\n {be.Message}");
                 throw;
             } catch (Exception ex) {
                 Exception be = ex.GetBaseException();
-                log.Error($"Exception rasied at: {DateTime.Now}\n {be.Message}", ex);
+                log.LogError(ex, $"Exception rasied at: {DateTime.Now}\n {be.Message}");
                 throw;
             }
             finally {
@@ -94,26 +94,43 @@ namespace UKRLP.Storage
         /// <summary>
         /// Gets all documents from the collection and returns the data as Provider objects
         /// </summary>
-        /// <param name="log">TraceWriter for logging info/errors</param>
+        /// <param name="log">ILogger for logging info/errors</param>
         public async Task<IEnumerable<Provider>> GetAll(ILogger log)
         {
-            // Get all provider documents in the collection
-            log.LogInformation("Getting all providers from collection");
-            Task<FeedResponse<dynamic>> task = client.ReadDocumentFeedAsync(Collection.SelfLink, new FeedOptions { MaxItemCount = -1 });
-            FeedResponse<dynamic> response = await task;
+            try {
+                // Get all provider documents in the collection
+                string token = null;
+                Task<FeedResponse<dynamic>> task = null;
+                List<dynamic> docs = new List<dynamic>();
+                log.LogInformation("Getting all providers from collection");
 
-            // Collections are schema-less and can therefore hold any data, even though we're only storing Provider docs
-            // So we can cast the returned data by serializing to json and then deserialising into Provider objects
-            log.LogInformation($"Serializing data for {response.LongCount()} providers");
-            string json = JsonConvert.SerializeObject(response);
-            return JsonConvert.DeserializeObject<IEnumerable<Provider>>(json);
+                // Read documents in batches, using continuation token to make sure we get them all
+                //Task<FeedResponse<dynamic>> task = client.ReadDocumentFeedAsync(Collection.SelfLink, new FeedOptions { MaxItemCount = -1 });
+                //FeedResponse<dynamic> response = await task;
+                do {
+                    task = client.ReadDocumentFeedAsync(Collection.SelfLink, new FeedOptions { MaxItemCount = -1, RequestContinuation = token });
+                    token = task.Result.ResponseContinuation;
+                    log.LogInformation("Collating results");
+                    docs.AddRange(task.Result.ToList());
+                } while (token != null);
+
+
+                // Collections are schema-less and can therefore hold any data, even though we're only storing Provider docs
+                // So we can cast the returned data by serializing to json and then deserialising into Provider objects
+                log.LogInformation($"Serializing data for {docs.LongCount()} providers");
+                string json = JsonConvert.SerializeObject(docs);
+                return JsonConvert.DeserializeObject<IEnumerable<Provider>>(json);
+
+            } catch (Exception ex) {
+                throw ex;
+            }
         }
 
         /// <summary>
         /// Gets all documents with matching PRN from the collection and returns the data as Provider objects
         /// </summary>
         /// <param name="PRN">UKPRN to search by</param>
-        /// <param name="log">TraceWriter for logging info/errors</param>
+        /// <param name="log">ILogger for logging info/errors</param>
         public Provider GetByPRN(string PRN, ILogger log)
         {
             try {
@@ -168,7 +185,7 @@ namespace UKRLP.Storage
         /// Gets all documents with partial matching Name from the collection and returns the data as Provider objects
         /// </summary>
         /// <param name="Name">Name fragment to search by</param>
-        /// <param name="log">TraceWriter for logging info/errors</param>
+        /// <param name="log">ILogger for logging info/errors</param>
         public IEnumerable<Provider> GetByName(string Name, ILogger log, out long count)
         {
             try {

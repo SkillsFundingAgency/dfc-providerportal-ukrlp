@@ -1,8 +1,8 @@
 ﻿{
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
-    "windowsAuthentication": false, 
-    "anonymousAuthentication": true, 
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:61772",
       "sslPort": 44370
@@ -24,6 +24,15 @@
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Dfc.ProviderPortal.UKRLP": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "APPSETTING_PrimaryKey": "5g8JmODSAlrkJJsgtNB5XvX2KX54gBHoK8ij8wYaFiua6Z6O03J1dzS92LUKI8eZGkgOLQoMRBfebwaiXx5AHg==",
+        "APPSETTING_StorageURI": "https://dfc-dev-prov-cdb.documents.azure.com/",
+        "APPSETTING_Database": "ukrlp",
+        "APPSETTING_Collection": "ukrlp"
       }
     }
   }

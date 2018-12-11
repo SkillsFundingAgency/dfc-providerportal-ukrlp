@@ -1,13 +1,22 @@
-﻿using Dfc.ProviderPortal.UKRLP.Models;
+﻿
+using Dfc.ProviderPortal.UKRLP.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace Dfc.ProviderPortal.Providers
 {
+    public enum Status
+    {
+        Registered = 0,
+        Onboarded = 1,
+        Unregistered = 99
+    }
 
     public class Provider: IProvider
     {
+        public Guid id { get; set; }
         public string UnitedKingdomProviderReferenceNumber { get; set; }
         public string ProviderName { get; set; }
         public string ProviderStatus { get; set; }
@@ -18,13 +27,13 @@ namespace Dfc.ProviderPortal.Providers
         public object ProviderAssociations { get; set; }
         public IProvideralias[] ProviderAliases { get; set; }
         public IVerificationdetail[] VerificationDetails { get; set; }
+        public Status Status { get; set; }
 
         public Provider(Providercontact[] providercontact, Provideralias[] provideraliases, Verificationdetail[] verificationdetails)
         {
             ProviderContact = providercontact;
             ProviderAliases = provideraliases;
             VerificationDetails = verificationdetails;
-
         }
 
     }

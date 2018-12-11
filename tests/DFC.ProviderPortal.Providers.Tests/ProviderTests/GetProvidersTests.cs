@@ -22,8 +22,8 @@ namespace DFC.ProviderPortal.Providers.Tests.ProviderTests
         private const string URI_PATH = "http://localhost:7071/api/";
         //private const long EXPECTED_COUNT = 15979;
 
-        private const string PROVIDER_BY_ID = "{ \"id\": \"e3f1acbc-9eb2-4c38-81ec-fb2feb270035\" }";
-        private const string PROVIDER_BY_PRN = "{ \"PRN\": 10028428 }";
+        private const string PROVIDER_BY_ID = "{ \"id\": \"154e4547-a37e-436d-93dd-a92674bc9603\" }";
+        private const string PROVIDER_BY_PRN = "{ \"PRN\": 10038194 }";
 
 
         public GetProvidersTests()

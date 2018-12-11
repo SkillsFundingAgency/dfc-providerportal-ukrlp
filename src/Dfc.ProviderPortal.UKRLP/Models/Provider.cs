@@ -11,7 +11,7 @@ namespace Dfc.ProviderPortal.Providers
     {
         Registered = 0,
         Onboarded = 1,
-        Unregistered = 99
+        Unregistered = 2
     }
 
     public class Provider: IProvider
@@ -28,6 +28,8 @@ namespace Dfc.ProviderPortal.Providers
         public IProvideralias[] ProviderAliases { get; set; }
         public IVerificationdetail[] VerificationDetails { get; set; }
         public Status Status { get; set; }
+        public string UpdatedBy { get; set; }
+        public DateTime DateUpdated { get; set; }
 
         public Provider(Providercontact[] providercontact, Provideralias[] provideraliases, Verificationdetail[] verificationdetails)
         {

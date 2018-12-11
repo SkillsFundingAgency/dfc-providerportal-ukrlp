@@ -20,7 +20,7 @@ namespace UKRLP.Storage
         /// <summary>
         /// CosmosDB client and collection
         /// </summary>
-        static private DocumentClient client = StorageFactory.DocumentClient;
+        static private DocumentClient docClient = StorageFactory.DocumentClient;
         static private DocumentCollection Collection = StorageFactory.DocumentCollection;
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace UKRLP.Storage
 
                     // TODO: Change to use faster Upsert (which currently errors as doesn't like using UKPRN as PartitionKey)
                     // Any docs with this PRN already in the database? Then delete them before re-adding the provider.
-                    IEnumerable<Document> docs = client.CreateDocumentQuery<Document>(Collection.SelfLink,
+                    IEnumerable<Document> docs = docClient.CreateDocumentQuery<Document>(Collection.SelfLink,
                                                                            new SqlQuerySpec("SELECT * FROM ukrlp p WHERE p.UnitedKingdomProviderReferenceNumber = @UKPRN",
                                                                                             new SqlParameterCollection(new[] {
                                                                                                     new SqlParameter { Name = "@UKPRN", Value = p.UnitedKingdomProviderReferenceNumber }
@@ -58,15 +58,15 @@ namespace UKRLP.Storage
                                                        .AsEnumerable();
                     if (docs.Any()) {
                         foreach(Document d in docs)
-                            await client.DeleteDocumentAsync(d.SelfLink);
+                            await docClient.DeleteDocumentAsync(d.SelfLink);
                     }
 
                     // Add provider doc to collection
                     //Task<ResourceResponse<Document>> task = client.UpsertDocumentAsync(Collection.SelfLink,
                     //                                                               p,
                     //                                                               new RequestOptions { PartitionKey = new PartitionKey(p.UnitedKingdomProviderReferenceNumber) });
-                    Task<ResourceResponse<Document>> task = client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(database, collection),
-                                                                                       p);
+                    Task<ResourceResponse<Document>> task = docClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(database, collection),
+                                                                                          p);
 
                     // TODO: Change to asynch operation
                     // If we make too many attempts too quickly we and use Task.WaitAll below then hundreds of "Request rate is large" exceptions thrown
@@ -108,7 +108,7 @@ namespace UKRLP.Storage
                 //Task<FeedResponse<dynamic>> task = client.ReadDocumentFeedAsync(Collection.SelfLink, new FeedOptions { MaxItemCount = -1 });
                 //FeedResponse<dynamic> response = await task;
                 do {
-                    task = client.ReadDocumentFeedAsync(Collection.SelfLink, new FeedOptions { MaxItemCount = -1, RequestContinuation = token });
+                    task = docClient.ReadDocumentFeedAsync(Collection.SelfLink, new FeedOptions { MaxItemCount = -1, RequestContinuation = token });
                     token = task.Result.ResponseContinuation;
                     log.LogInformation("Collating results");
                     docs.AddRange(task.Result.ToList());
@@ -170,10 +170,10 @@ namespace UKRLP.Storage
                 //log.Info($"ProviderStorage returning provider with name '{p?.ProviderName}'");
                 //return p;
 
-                return client.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
-                             .Where(p => p.UnitedKingdomProviderReferenceNumber == PRN)
-                             .AsEnumerable()
-                             .FirstOrDefault();
+                return docClient.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+                                .Where(p => p.UnitedKingdomProviderReferenceNumber == PRN)
+                                .AsEnumerable()
+                                .FirstOrDefault();
 
             } catch (Exception ex) {
                 log.LogError("Exception thrown in GetByPRN", ex, "GetByPRN");
@@ -191,14 +191,44 @@ namespace UKRLP.Storage
             try {
                 // Get matching provider by passed fragment of Name from the collection
                 log.LogInformation($"Getting providers from collection matching Name {Name}");
-                IQueryable<Provider> qry = client.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
-                                                 .Where(p => p.ProviderName.ToLower().Contains(Name.ToLower()));
+                IQueryable<Provider> qry = docClient.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+                                                    .Where(p => p.ProviderName.ToLower().Contains(Name.ToLower()));
                 IEnumerable<Provider> matches = qry.AsEnumerable();
                 count = matches.LongCount();
                 return matches;
 
             } catch (Exception ex) {
                 log.LogError("Exception thrown in GetByName", ex, "GetByName");
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Updates a single venue document in the collection
+        /// Currently only allow Status property to be changed
+        /// </summary>
+        /// <param name="provider">The Provider to update</param>
+        /// <param name="log">ILogger for logging info/errors</param>
+        public async Task<ResourceResponse<Document>> UpdateDocAsync(Provider provider, ILogger log)
+        {
+            try
+            {
+                // Get matching venue by Id from the collection
+                log.LogInformation($"Getting provider from collection with Id {provider?.id}");
+                Document updated = docClient.CreateDocumentQuery(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+                                            .Where(u => u.Id == provider.id.ToString())
+                                            .AsEnumerable()
+                                            .FirstOrDefault();
+
+                if (updated == null)
+                    return null;
+
+                updated.SetPropertyValue("Status", (int)provider.Status);
+                updated.SetPropertyValue("UpdatedBy", provider.UpdatedBy);
+                updated.SetPropertyValue("DateUpdated", DateTime.Now);
+                return await docClient.UpsertDocumentAsync(Collection.SelfLink, updated);
+
+            } catch (Exception ex) {
                 throw ex;
             }
         }

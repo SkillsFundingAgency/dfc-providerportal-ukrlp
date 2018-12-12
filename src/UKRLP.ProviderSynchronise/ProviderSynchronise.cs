@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using ProviderService;
 using Newtonsoft.Json;
 
@@ -11,28 +12,31 @@ namespace UKRLP.ProviderSynchronise
 {
     public class ProviderSynchronise
     {
-        public ProviderRecordStructure[] SynchroniseProviders()
+        public List<ProviderRecordStructure> SynchroniseProviders(ILogger log)
         {
-            return SynchroniseProviders(DateTime.Now.AddDays(-1));
+            return SynchroniseProviders(DateTime.Now.AddDays(-1), log);
         }
 
-        public ProviderRecordStructure[] SynchroniseProviders(DateTime dtLastUpdate)
+        public List<ProviderRecordStructure> SynchroniseProviders(DateTime dtLastUpdate, ILogger log)
         {
+            List<ProviderRecordStructure> results = new List<ProviderRecordStructure>();
+
             string[] statusesToFetch =
             {
                     "A", // Active
-                    "V", // Verified
+                    //"V", // Verified                      // Omitted, we suspect this may be a subset of Active providers
                     "PD1", // Deactivation in process
                     "PD2" // Deactivation complete
                 };
             var request = Request(dtLastUpdate);
             foreach (String status in statusesToFetch)
             {
+                log.LogInformation($"Downloading providers from UKRLP service with status {status}");
+
                 request.SelectionCriteria.ProviderStatus = status;
                 request.QueryId = GetNextQueryId();
 
-                var pqp = new ProviderQueryParam
-                {
+                var pqp = new ProviderQueryParam {
                     ProviderQueryRequest = request
                 };
                 var retrieveall = new ProviderQueryPortTypeClient();
@@ -41,10 +45,13 @@ namespace UKRLP.ProviderSynchronise
                 x.Wait();
 
                 //return JsonConvert.SerializeObject(x.Result.ProviderQueryResponse.MatchingProviderRecords);
-                return x.Result.ProviderQueryResponse.MatchingProviderRecords;
+                //return x.Result.ProviderQueryResponse.MatchingProviderRecords;
+
+                log.LogInformation($"UKRLP service returned {x.Result.ProviderQueryResponse.MatchingProviderRecords.LongLength} providers with status {status}");
+                results.AddRange(x.Result.ProviderQueryResponse.MatchingProviderRecords);
             }
-            //return string.Empty;
-            return null;
+            //return null;
+            return results;
         }
 
         private ProviderQueryStructure Request(DateTime dtLastUpdate)

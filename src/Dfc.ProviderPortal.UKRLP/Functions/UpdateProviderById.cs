@@ -41,14 +41,20 @@ namespace Dfc.ProviderPortal.Providers
                     response = req.CreateResponse(HttpStatusCode.BadRequest, ResponseHelper.ErrorMessage("Missing status argument"));
                 else if (!int.TryParse(status, out int parsedStatus))
                     response = req.CreateResponse(HttpStatusCode.BadRequest, ResponseHelper.ErrorMessage("Invalid status argument"));
-                else if (parsedStatus != (int)Status.Registered && parsedStatus != (int)Status.Onboarded && parsedStatus != (int)Status.Unregistered)
-                    response = req.CreateResponse(HttpStatusCode.BadRequest, ResponseHelper.ErrorMessage("Invalid status argument"));
+                else if (parsedStatus != (int)Status.Onboarded) //&& parsedStatus != (int)Status.Registered && parsedStatus != (int)Status.Unregistered)
+                    response = req.CreateResponse(HttpStatusCode.BadRequest, ResponseHelper.ErrorMessage("Invalid status argument - only 1 (onboarded) permitted"));
                 else if (string.IsNullOrEmpty(updatedby))
                     response = req.CreateResponse(HttpStatusCode.BadRequest, ResponseHelper.ErrorMessage("Missing UpdatedBy argument"));
                 else
                 {
                     // Insert data as new document in collection
-                    provider = new Provider(null, null, null) { id = parsedId, Status = (Status)parsedStatus, UpdatedBy = updatedby };
+                    provider = new Provider(null, null, null) {
+                        id = parsedId,
+                        DateOnboarded = DateTime.Now,
+                        Status = (Status)parsedStatus,
+                        UpdatedBy = updatedby
+                    };
+
                     Document result = await new ProviderStorage().UpdateDocAsync(provider, log);
                     if (result == null)
                         response = req.CreateResponse(HttpStatusCode.BadRequest,

@@ -23,10 +23,10 @@ namespace Dfc.ProviderPortal.Providers
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
             ProviderSynchronise ps = new ProviderSynchronise();
-            ProviderService.ProviderRecordStructure[] output = ps.SynchroniseProviders(DateTime.MinValue);
+            List<ProviderService.ProviderRecordStructure> output = ps.SynchroniseProviders(DateTime.MinValue, log);
 
-            log.LogInformation($"Inserting {output.LongLength} providers to CosmosDB providers collection");
-            Task<bool> task = new ProviderStorage().InsertDocs(output, log);
+            log.LogInformation($"Inserting {output.Count} providers to CosmosDB providers collection");
+            Task<bool> task = new ProviderStorage().InsertDocs(output, log, true);  // Truncate collection first
             task.Wait();
             return req.CreateResponse<string>(HttpStatusCode.OK, JsonConvert.SerializeObject(output));
         }

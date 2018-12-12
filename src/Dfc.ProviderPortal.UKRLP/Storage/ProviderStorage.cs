@@ -33,10 +33,16 @@ namespace UKRLP.Storage
         /// </summary>
         /// <param name="providers">Provider data from service</param>
         /// <param name="log">ILogger for logging info/errors</param>
-        public async Task<bool> InsertDocs(IEnumerable<ProviderService.ProviderRecordStructure> providers, ILogger log)
+        public async Task<bool> InsertDocs(IEnumerable<ProviderService.ProviderRecordStructure> providers,
+                                           ILogger log,
+                                           bool EmptyCollectionFirst = false)
         {
             // Insert documents into collection
             try {
+                // If we're initialising by syncing all providers, delete all collection docs first
+                if (EmptyCollectionFirst)
+                    await TruncateCollectionAsync(log);
+
                 //Task<ResourceResponse<Document>> task = null;
                 //Task[] tasks = new Task[providers.Count()];
                 //int i = 0;
@@ -44,29 +50,71 @@ namespace UKRLP.Storage
                 // Insert each provider in turn as a document
                 string database = SettingsHelper.Database;
                 string collection = SettingsHelper.Collection;
-                foreach (ProviderService.ProviderRecordStructure p in providers) {
+                log.LogInformation($"Inserting {providers.Count()} provider documents");
+                foreach (ProviderService.ProviderRecordStructure p in providers)
+                {
+                    DateTime? dateUpdated = null;
+                    string whoUpdated = null;
+                    Status status = Status.Registered; // default value
 
-                    // TODO: Change to use faster Upsert (which currently errors as doesn't like using UKPRN as PartitionKey)
-                    // Any docs with this PRN already in the database? Then delete them before re-adding the provider.
-                    IEnumerable<Document> docs = docClient.CreateDocumentQuery<Document>(Collection.SelfLink,
-                                                                           new SqlQuerySpec("SELECT * FROM ukrlp p WHERE p.UnitedKingdomProviderReferenceNumber = @UKPRN",
-                                                                                            new SqlParameterCollection(new[] {
-                                                                                                    new SqlParameter { Name = "@UKPRN", Value = p.UnitedKingdomProviderReferenceNumber }
-                                                                                            })),
-                                                        new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
-                                                       //.Where(s => s.GetPropertyValue<string>("UnitedKingdomProviderReferenceNumber") == p.UnitedKingdomProviderReferenceNumber)  // bang!
-                                                       .AsEnumerable();
-                    if (docs.Any()) {
-                        foreach(Document d in docs)
-                            await docClient.DeleteDocumentAsync(d.SelfLink);
+                    // Check for existing documents (unless we already know we've just deleted them all)
+                    if (!EmptyCollectionFirst)
+                    {
+                        // TODO: Change to use faster Upsert (which currently errors as doesn't like using UKPRN as PartitionKey)
+                        // Any docs with this PRN already in the database? Then delete them before re-adding the provider.
+                        IEnumerable<Document> docs = docClient.CreateDocumentQuery<Document>(Collection.SelfLink,
+                                                                               new SqlQuerySpec("SELECT * FROM ukrlp p WHERE p.UnitedKingdomProviderReferenceNumber = @UKPRN",
+                                                                                                new SqlParameterCollection(new[] {
+                                                                                                        new SqlParameter { Name = "@UKPRN", Value = p.UnitedKingdomProviderReferenceNumber }
+                                                                                                })),
+                                                            new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+                                                           //.Where(s => s.GetPropertyValue<string>("UnitedKingdomProviderReferenceNumber") == p.UnitedKingdomProviderReferenceNumber)  // bang!
+                                                           .AsEnumerable();
+
+                        // Get CD field values from any existing docs then delete them
+                        if (docs.Any()) {
+                            foreach (Document d in docs) {
+                                dateUpdated = d.GetPropertyValue<DateTime>("DateUpdated");
+                                whoUpdated = d.GetPropertyValue<string>("UpdatedBy");
+                                status = (Status)d.GetPropertyValue<int>("Status");
+                                await docClient.DeleteDocumentAsync(d.SelfLink);
+                            }
+                        }
                     }
 
                     // Add provider doc to collection
                     //Task<ResourceResponse<Document>> task = client.UpsertDocumentAsync(Collection.SelfLink,
-                    //                                                               p,
-                    //                                                               new RequestOptions { PartitionKey = new PartitionKey(p.UnitedKingdomProviderReferenceNumber) });
+                    //                                                                   p,
+                    //                                                                   new RequestOptions { PartitionKey = new PartitionKey(p.UnitedKingdomProviderReferenceNumber) });
+
+                    // Set CD field values, including Status, appropriately for deactivated/deactivating providers
+                    CDProviderStructure provider = new CDProviderStructure()
+                    {
+                        DateDownloaded = DateTime.Now,
+                        ExpiryDate = p.ExpiryDate,
+                        ExpiryDateSpecified = p.ExpiryDateSpecified,
+                        ProviderAliases = p.ProviderAliases,
+                        ProviderAssociations = p.ProviderAssociations,
+                        ProviderContact = p.ProviderContact,
+                        ProviderName = p.ProviderName,
+                        ProviderStatus = p.ProviderStatus,
+                        ProviderVerificationDate = p.ProviderVerificationDate,
+                        ProviderVerificationDateSpecified = p.ProviderVerificationDateSpecified,
+                        UnitedKingdomProviderReferenceNumber = p.UnitedKingdomProviderReferenceNumber,
+                        VerificationDetails = p.VerificationDetails
+                    };
+                    if (!string.IsNullOrWhiteSpace(whoUpdated))
+                        provider.UpdatedBy = whoUpdated;
+                    if (dateUpdated.HasValue && dateUpdated.Value > DateTime.MinValue)
+                        provider.DateUpdated = dateUpdated.Value;
+                    if (p.ProviderStatus == "PD1" || p.ProviderStatus == "PD2")
+                        provider.Status = Status.Unregistered;
+                    else
+                        provider.Status = status; // Status.Registered;
+
+                    // Insert document
                     Task<ResourceResponse<Document>> task = docClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(database, collection),
-                                                                                          p);
+                                                                                          provider);
 
                     // TODO: Change to asynch operation
                     // If we make too many attempts too quickly we and use Task.WaitAll below then hundreds of "Request rate is large" exceptions thrown
@@ -86,7 +134,21 @@ namespace UKRLP.Storage
                 log.LogError(ex, $"Exception rasied at: {DateTime.Now}\n {be.Message}");
                 throw;
             }
-            finally {
+            return true;
+        }
+
+        async private Task<bool> TruncateCollectionAsync(ILogger log)
+        {
+            try {
+                log.LogInformation("Deleting all docs from providers collection");
+                IEnumerable<Document> docs = docClient.CreateDocumentQuery<Document>(Collection.SelfLink,
+                                                                                     new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+                                                      .ToList();
+                log.LogInformation($"Deleting {docs.Count()} documents");
+                foreach (Document d in docs)
+                    await docClient.DeleteDocumentAsync(d.SelfLink);
+            } catch (Exception ex) {
+                throw ex;
             }
             return true;
         }
@@ -223,9 +285,12 @@ namespace UKRLP.Storage
                 if (updated == null)
                     return null;
 
-                updated.SetPropertyValue("Status", (int)provider.Status);
+                string ps = updated.GetPropertyValue<string>("ProviderStatus");
+                if (!string.IsNullOrWhiteSpace(ps) && !ps.StartsWith("PD"))
+                    updated.SetPropertyValue("Status", (int)provider.Status);
                 updated.SetPropertyValue("UpdatedBy", provider.UpdatedBy);
                 updated.SetPropertyValue("DateUpdated", DateTime.Now);
+                updated.SetPropertyValue("DateOnboarded", provider.DateOnboarded);
                 return await docClient.UpsertDocumentAsync(Collection.SelfLink, updated);
 
             } catch (Exception ex) {

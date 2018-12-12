@@ -20,9 +20,9 @@ namespace Dfc.ProviderPortal.UKRLP
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             ProviderSynchronise ps = new ProviderSynchronise();
-            ProviderService.ProviderRecordStructure[] output = ps.SynchroniseProviders();
+            List<ProviderService.ProviderRecordStructure> output = ps.SynchroniseProviders(log);
 
-            log.LogInformation($"Inserting {output.LongLength} providers to CosmosDB providers collection");
+            log.LogInformation($"Inserting {output.Count} providers to CosmosDB providers collection");
             Task<bool> task = new ProviderStorage().InsertDocs(output, log);
         }
     }

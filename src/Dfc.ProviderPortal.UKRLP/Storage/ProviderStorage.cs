@@ -41,7 +41,7 @@ namespace UKRLP.Storage
             try {
                 // If we're initialising by syncing all providers, delete all collection docs first
                 if (EmptyCollectionFirst)
-                    await TruncateCollectionAsync(log);
+                    TruncateCollection(log);
 
                 //Task<ResourceResponse<Document>> task = null;
                 //Task[] tasks = new Task[providers.Count()];
@@ -137,16 +137,32 @@ namespace UKRLP.Storage
             return true;
         }
 
-        async private Task<bool> TruncateCollectionAsync(ILogger log)
+        private bool TruncateCollection(ILogger log)
         {
             try {
                 log.LogInformation("Deleting all docs from providers collection");
                 IEnumerable<Document> docs = docClient.CreateDocumentQuery<Document>(Collection.SelfLink,
                                                                                      new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
-                                                      .ToList();
-                log.LogInformation($"Deleting {docs.Count()} documents");
-                foreach (Document d in docs)
-                    await docClient.DeleteDocumentAsync(d.SelfLink);
+                                                      .AsEnumerable<Document>();
+
+                // Keep the count, saves constantly recounting collection
+                int docCount = docs.Count();
+                log.LogInformation($"Deleting {docCount} documents");
+
+                //foreach (Document d in docs)
+                //    await docClient.DeleteDocumentAsync(d.SelfLink);
+
+                int batchsize = 40;
+                for (int i = 0; i < docCount; i += batchsize)
+                {
+                    log.LogInformation($"Deleting next {batchsize} documents, batch {(int)(i / batchsize + 1)} of {(int)(docCount / batchsize + 0.5)}");
+                    var tasks = docs.Skip(i)
+                                    .Take(batchsize)
+                                    .Select(async d => await docClient.DeleteDocumentAsync(d.SelfLink))
+                                    .ToArray();
+                    Task.WaitAll(tasks);
+                }
+
             } catch (Exception ex) {
                 throw ex;
             }

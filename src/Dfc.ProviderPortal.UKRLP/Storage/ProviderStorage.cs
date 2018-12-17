@@ -41,7 +41,7 @@ namespace UKRLP.Storage
             try {
                 // If we're initialising by syncing all providers, delete all collection docs first
                 if (EmptyCollectionFirst)
-                    TruncateCollection(log);
+                    await DeleteAndRecreateCollection(log); //TruncateCollection(log);
 
                 //Task<ResourceResponse<Document>> task = null;
                 //Task[] tasks = new Task[providers.Count()];
@@ -88,20 +88,22 @@ namespace UKRLP.Storage
                     //                                                                   new RequestOptions { PartitionKey = new PartitionKey(p.UnitedKingdomProviderReferenceNumber) });
 
                     // Set CD field values, including Status, appropriately for deactivated/deactivating providers
-                    CDProviderStructure provider = new CDProviderStructure()
+                    //CDProviderStructure provider = new CDProviderStructure()
+                    Provider provider = new Provider(null, null, null)
                     {
+                        id = Guid.NewGuid(),
                         DateDownloaded = DateTime.Now,
-                        ExpiryDate = p.ExpiryDate,
-                        ExpiryDateSpecified = p.ExpiryDateSpecified,
-                        ProviderAliases = p.ProviderAliases,
-                        ProviderAssociations = p.ProviderAssociations,
-                        ProviderContact = p.ProviderContact,
+                        //ExpiryDate = p.ExpiryDate,
+                        //ExpiryDateSpecified = p.ExpiryDateSpecified,
+                        //ProviderAliases = p.ProviderAliases,
+                        //ProviderAssociations = p.ProviderAssociations,
+                        ProviderContact = null, //new Providercontact(new Contactaddress(), new Contactpersonaldetails()), //p.ProviderContact,
                         ProviderName = p.ProviderName,
                         ProviderStatus = p.ProviderStatus,
-                        ProviderVerificationDate = p.ProviderVerificationDate,
-                        ProviderVerificationDateSpecified = p.ProviderVerificationDateSpecified,
-                        UnitedKingdomProviderReferenceNumber = p.UnitedKingdomProviderReferenceNumber,
-                        VerificationDetails = p.VerificationDetails
+                        //ProviderVerificationDate = p.ProviderVerificationDate,
+                        //ProviderVerificationDateSpecified = p.ProviderVerificationDateSpecified,
+                        UnitedKingdomProviderReferenceNumber = p.UnitedKingdomProviderReferenceNumber //,
+                        //VerificationDetails = p.VerificationDetails
                     };
                     if (!string.IsNullOrWhiteSpace(whoUpdated))
                         provider.UpdatedBy = whoUpdated;
@@ -137,6 +139,47 @@ namespace UKRLP.Storage
             return true;
         }
 
+
+        /// <summary>
+        /// Delete and recreate Cosmos DB providers collection (faster than deleting all documents)
+        /// </summary>
+        /// <param name="log">ILogger for logging info/errors</param>
+        private async static Task DeleteAndRecreateCollection(ILogger log) //DocumentClient client, string collectionId)
+        {
+            try {
+                // Use own DocumentClient, otherwise static helper class throws exception if collection doesn't exist
+                using (DocumentClient client = new DocumentClient(new Uri(SettingsHelper.StorageURI),
+                                                                          SettingsHelper.PrimaryKey
+                                                                 ))
+                {
+                    // Delete collection if it exists
+                    string collectionId = SettingsHelper.Collection;
+                    Uri uriDB = UriFactory.CreateDatabaseUri(SettingsHelper.Database);
+                    IEnumerable<DocumentCollection> collections = await client.ReadDocumentCollectionFeedAsync(uriDB);
+                    if (collections.Select(c => c.Id).Contains(collectionId))
+                    {
+                        log.LogInformation($"Deleting collection {collectionId} from database {SettingsHelper.Database}");
+                        await client.DeleteDocumentCollectionAsync(collections.First(c => c.Id == collectionId).SelfLink);
+                        log.LogInformation("Deletion successful");
+                    }
+
+                    // Then recreate it
+                    log.LogInformation($"Recreating collection {collectionId} in database {SettingsHelper.Database}");
+                    await client.CreateDocumentCollectionAsync(uriDB, new DocumentCollection { Id = collectionId });
+                    log.LogInformation("Creation successful");
+                }
+
+            } catch (Exception ex) {
+                throw ex;
+            }
+        }
+
+
+
+        /// <summary>
+        /// Delete all providers from Cosmos DB collection
+        /// </summary>
+        /// <param name="log">ILogger for logging info/errors</param>
         private bool TruncateCollection(ILogger log)
         {
             try {

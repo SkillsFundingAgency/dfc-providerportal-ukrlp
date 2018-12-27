@@ -37,6 +37,18 @@
       "metadata": {
         "description": "Cosmos DB access key"
       }
+    },
+    "cosmosDBdatabase": {
+      "type": "string",
+      "metadata": {
+        "description": "Cosmos DB account name in the format https://dfc-xxx-xxx-cdb.documents.azure.com/"
+      }
+    },
+    "cosmosDBcollection": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Cosmos DB access key"
+      }
     }
   },
   "variables": {
@@ -111,11 +123,11 @@
               },
               {
                 "name": "Database",
-                "value": "ukrlp"
+                "value": "[parameters('cosmosDBdatabase')]"
               },
               {
                 "name": "Collection",
-                "value": "ukrlp"
+                "value": "[parameters('cosmosDBcollection')]"
               }
             ]
           }

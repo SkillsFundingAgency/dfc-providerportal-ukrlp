@@ -31,8 +31,7 @@ namespace Dfc.ProviderPortal.Providers
             try {
                 // Get data (only required fields to speed retrieval)
                 log.LogInformation($"GetLiveProvidersForAzureSearch starting");
-                IEnumerable<KeyValuePair<Guid, string>> persisted = new ProviderStorage().GetLiveProvidersForAzureSearch(log, out long count);
-                var results = persisted.Select(p => new { id = p.Key, ProviderName = p.Value });
+                IEnumerable<AzureSearchProviderModel> results = new ProviderStorage().GetLiveProvidersForAzureSearch(log, out long count);
 
                 // Return results
                 log.LogInformation($"GetLiveProvidersForAzureSearch returning {count} providers");

@@ -294,15 +294,20 @@ namespace UKRLP.Storage
         /// Gets all documents for live providers from the collection and returns the data as Provider objects
         /// </summary>
         /// <param name="log">ILogger for logging info/errors</param>
-        public IEnumerable<KeyValuePair<Guid, string>> GetLiveProvidersForAzureSearch(ILogger log, out long count)
+        public IEnumerable<AzureSearchProviderModel> GetLiveProvidersForAzureSearch(ILogger log, out long count)
         {
             try {
                 // Get live providers from the collection
                 log.LogInformation($"Getting live providers from collection");
                 IQueryable<Provider> qry = docClient.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
                                                     .Where(p => p.Status == Status.Onboarded);
-                IEnumerable<KeyValuePair<Guid, string>> matches = qry.AsEnumerable()
-                                                                     .Select(p => new KeyValuePair<Guid, string>(p.id, p.ProviderName));
+                IEnumerable<AzureSearchProviderModel> matches = qry.AsEnumerable()
+                                                                   .Select(p => new AzureSearchProviderModel()
+                                                                   {
+                                                                       id = p.id,
+                                                                       UnitedKingdomProviderReferenceNumber = int.Parse(p.UnitedKingdomProviderReferenceNumber),
+                                                                       ProviderName = p.ProviderName
+                                                                   });
                 count = matches.LongCount();
                 return matches;
 

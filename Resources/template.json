@@ -102,7 +102,7 @@
           "appServiceType": {
             "value": "functionapp"
           },
-          "functionAppAppSettings": {
+          "appServiceAppSettings": {
             "value": [
               {
                 "name": "APPINSIGHTS_INSTRUMENTATIONKEY",

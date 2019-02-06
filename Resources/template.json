@@ -90,7 +90,7 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "functionAppName": {
+          "appServiceName": {
             "value": "[variables('functionAppName')]"
           },
           "appServicePlanName": {

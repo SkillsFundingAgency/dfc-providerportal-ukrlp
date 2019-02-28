@@ -1,0 +1,32 @@
+﻿{
+	"DatabaseName": "providerportal",
+	"Collections": [
+		{
+			"CollectionName": "ukrlp",
+			"OfferThroughput": 400,
+			"PartitionKey": "/ProviderStatus",
+			"IndexingPolicy": {
+				"indexingMode": "consistent",
+				"automatic": true,
+				"includedPaths": [
+					{
+						"path": "/*",
+						"indexes": [
+							{
+								"kind": "Range",
+								"dataType": "Number",
+								"precision": -1
+							}, {
+								"kind": "Hash",
+								"dataType": "String",
+								"precision": 3
+							}
+						]
+					}
+				],
+				"excludedPaths": [
+				]
+			}
+		}
+	]
+}

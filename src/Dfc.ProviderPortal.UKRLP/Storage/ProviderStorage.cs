@@ -239,8 +239,9 @@ namespace UKRLP.Storage
                 // Collections are schema-less and can therefore hold any data, even though we're only storing Provider docs
                 // So we can cast the returned data by serializing to json and then deserialising into Provider objects
                 log.LogInformation($"Serializing data for {docs.LongCount()} providers");
-                string json = JsonConvert.SerializeObject(docs);
-                return JsonConvert.DeserializeObject<IEnumerable<Provider>>(json);
+                //string json = JsonConvert.SerializeObject(docs);
+                //return JsonConvert.DeserializeObject<IEnumerable<Provider>>(json);
+                return ((IEnumerable<dynamic>)docs).Select(d => (Provider)d);
 
             } catch (Exception ex) {
                 throw ex;
@@ -318,12 +319,47 @@ namespace UKRLP.Storage
         }
 
         /// <summary>
+        /// Sets default DateUpdated value for all documents without one
+        /// </summary>
+        /// <param name="log">ILogger for logging info/errors</param>
+        public async Task<IEnumerable<Provider>> SetDefaultDateUpdatedAsync(ILogger log) //, out long count)
+        {
+            try {
+                // Get providers from the collection
+                log.LogInformation($"Getting providers from collection");
+                //IQueryable<Provider> qry = docClient.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+                //                                    .Where(p => p.DateUpdated == null);
+                Task<IEnumerable<Provider>> task = GetAll(log);
+                task.Wait();
+                IEnumerable<Provider> providers =  task.Result
+                                                       .Where(p => p.DateUpdated == null || p.DateUpdated == DateTime.MinValue);
+
+                Uri uri = UriFactory.CreateDocumentCollectionUri(SettingsHelper.Database, SettingsHelper.Collection);
+                log.LogInformation($"Setting default DateUpdated for {providers.LongCount()} provider documents");
+                foreach (Provider p in providers) { //qry.AsEnumerable()) {
+                    if (p.DateUpdated < new DateTime(2000, 1, 1)) {
+                        p.DateUpdated = new DateTime(2000, 1, 1);
+                        //docClient.UpsertDocumentAsync(uri, p);
+                        await UpdateDocAsync(p, log, false);
+                    }
+                }
+
+                //count = providers.LongCount();
+                return providers; // qry.AsEnumerable();
+
+            } catch (Exception ex) {
+                log.LogError("Exception thrown in SetDefaultDateUpdated", ex, "SetDefaultDateUpdated");
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// Updates a single venue document in the collection
         /// Currently only allow Status property to be changed
         /// </summary>
         /// <param name="provider">The Provider to update</param>
         /// <param name="log">ILogger for logging info/errors</param>
-        public async Task<ResourceResponse<Document>> UpdateDocAsync(Provider provider, ILogger log)
+        public async Task<ResourceResponse<Document>> UpdateDocAsync(Provider provider, ILogger log, bool UpdateDateUpdated = true)
         {
             try
             {
@@ -341,8 +377,11 @@ namespace UKRLP.Storage
                 if (!string.IsNullOrWhiteSpace(ps) && !ps.StartsWith("PD"))
                     updated.SetPropertyValue("Status", (int)provider.Status);
                 updated.SetPropertyValue("UpdatedBy", provider.UpdatedBy);
-                updated.SetPropertyValue("DateUpdated", DateTime.Now);
-                updated.SetPropertyValue("DateOnboarded", provider.DateOnboarded);
+                if (UpdateDateUpdated) {
+                    updated.SetPropertyValue("DateUpdated", DateTime.Now);
+                    updated.SetPropertyValue("DateOnboarded", provider.DateOnboarded);
+                } else
+                    updated.SetPropertyValue("DateUpdated", provider.DateUpdated);
                 return await docClient.UpsertDocumentAsync(Collection.SelfLink, updated);
 
             } catch (Exception ex) {

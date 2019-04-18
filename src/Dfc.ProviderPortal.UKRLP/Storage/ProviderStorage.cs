@@ -45,7 +45,7 @@ namespace UKRLP.Storage
 
                 //Task<ResourceResponse<Document>> task = null;
                 //Task[] tasks = new Task[providers.Count()];
-                //int i = 0;
+                int i = 0;
 
                 // Insert each provider in turn as a document
                 string database = SettingsHelper.Database;
@@ -53,31 +53,38 @@ namespace UKRLP.Storage
                 log.LogInformation($"Inserting {providers.Count()} provider documents");
                 foreach (ProviderService.ProviderRecordStructure p in providers)
                 {
+                    Guid id = Guid.NewGuid();
                     DateTime? dateUpdated = null;
+                    DateTime? dateOnboarded = null;
                     string whoUpdated = null;
                     Status status = Status.Registered; // default value
+                    List<Task> tasks = new List<Task>();
+                    i++;
+                    log.LogInformation($"Processing provider {i} ({p.ProviderName})");
 
                     // Check for existing documents (unless we already know we've just deleted them all)
                     if (!EmptyCollectionFirst)
                     {
                         // TODO: Change to use faster Upsert (which currently errors as doesn't like using UKPRN as PartitionKey)
                         // Any docs with this PRN already in the database? Then delete them before re-adding the provider.
-                        IEnumerable<Document> docs = docClient.CreateDocumentQuery<Document>(Collection.SelfLink,
-                                                                               new SqlQuerySpec("SELECT * FROM ukrlp p WHERE p.UnitedKingdomProviderReferenceNumber = @UKPRN",
-                                                                                                new SqlParameterCollection(new[] {
-                                                                                                        new SqlParameter { Name = "@UKPRN", Value = p.UnitedKingdomProviderReferenceNumber }
-                                                                                                })),
-                                                            new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
-                                                           //.Where(s => s.GetPropertyValue<string>("UnitedKingdomProviderReferenceNumber") == p.UnitedKingdomProviderReferenceNumber)  // bang!
-                                                           .AsEnumerable();
+                        IEnumerable<Document> existing = docClient.CreateDocumentQuery<Document>(Collection.SelfLink,
+                                                                            new SqlQuerySpec("SELECT * FROM ukrlp p WHERE p.UnitedKingdomProviderReferenceNumber = @UKPRN",
+                                                                                             new SqlParameterCollection(new[] {
+                                                                                                    new SqlParameter { Name = "@UKPRN", Value = p.UnitedKingdomProviderReferenceNumber }
+                                                                                             })),
+                                                                            new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+                                                                  //.Where(s => s.GetPropertyValue<string>("UnitedKingdomProviderReferenceNumber") == p.UnitedKingdomProviderReferenceNumber)  // bang!
+                                                                  .AsEnumerable();
 
                         // Get CD field values from any existing docs then delete them
-                        if (docs.Any()) {
-                            foreach (Document d in docs) {
-                                dateUpdated = d.GetPropertyValue<DateTime>("DateUpdated");
-                                whoUpdated = d.GetPropertyValue<string>("UpdatedBy");
-                                status = (Status)d.GetPropertyValue<int>("Status");
-                                await docClient.DeleteDocumentAsync(d.SelfLink);
+                        if (existing.Any()) {
+                            foreach (Document doc in existing) {
+                                id = doc.GetPropertyValue<Guid>("id");
+                                dateUpdated = doc.GetPropertyValue<DateTime?>("DateUpdated");
+                                dateOnboarded = doc.GetPropertyValue<DateTime?>("DateOnboarded");
+                                whoUpdated = doc.GetPropertyValue<string>("UpdatedBy");
+                                status = (Status)doc.GetPropertyValue<int>("Status");
+                                await docClient.DeleteDocumentAsync(doc.SelfLink);
                             }
                         }
                     }
@@ -88,46 +95,64 @@ namespace UKRLP.Storage
                     //                                                                   new RequestOptions { PartitionKey = new PartitionKey(p.UnitedKingdomProviderReferenceNumber) });
 
                     // Set CD field values, including Status, appropriately for deactivated/deactivating providers
-                    //CDProviderStructure provider = new CDProviderStructure()
-                    Provider provider = new Provider(null, null, null)
-                    {
-                        id = Guid.NewGuid(),
-                        DateDownloaded = DateTime.Now,
-                        //ExpiryDate = p.ExpiryDate,
-                        //ExpiryDateSpecified = p.ExpiryDateSpecified,
-                        //ProviderAliases = p.ProviderAliases,
-                        //ProviderAssociations = p.ProviderAssociations,
-                        ProviderContact = null, //new Providercontact(new Contactaddress(), new Contactpersonaldetails()), //p.ProviderContact,
-                        ProviderName = p.ProviderName,
-                        ProviderStatus = p.ProviderStatus,
-                        //ProviderVerificationDate = p.ProviderVerificationDate,
-                        //ProviderVerificationDateSpecified = p.ProviderVerificationDateSpecified,
-                        UnitedKingdomProviderReferenceNumber = p.UnitedKingdomProviderReferenceNumber //,
-                        //VerificationDetails = p.VerificationDetails
-                    };
-                    if (!string.IsNullOrWhiteSpace(whoUpdated))
-                        provider.UpdatedBy = whoUpdated;
-                    if (dateUpdated.HasValue && dateUpdated.Value > DateTime.MinValue)
-                        provider.DateUpdated = dateUpdated.Value;
-                    if (p.ProviderStatus == "PD1" || p.ProviderStatus == "PD2")
-                        provider.Status = Status.Unregistered;
-                    else
-                        provider.Status = status; // Status.Registered;
+                    //Provider provider = new Provider(null, null, null)
+                    //{
+                    //    id = Guid.NewGuid(),
+                    //    DateDownloaded = DateTime.Now,
+                    //    //ExpiryDate = p.ExpiryDate,
+                    //    //ExpiryDateSpecified = p.ExpiryDateSpecified,
+                    //    //ProviderAliases = p.ProviderAliases,
+                    //    //ProviderAssociations = p.ProviderAssociations,
+                    //    ProviderContact = null, //new Providercontact(new Contactaddress(), new Contactpersonaldetails()), //p.ProviderContact,
+                    //    ProviderName = p.ProviderName,
+                    //    ProviderStatus = p.ProviderStatus,
+                    //    //ProviderVerificationDate = p.ProviderVerificationDate,
+                    //    //ProviderVerificationDateSpecified = p.ProviderVerificationDateSpecified,
+                    //    UnitedKingdomProviderReferenceNumber = p.UnitedKingdomProviderReferenceNumber //,
+                    //    //VerificationDetails = p.VerificationDetails
+                    //};
 
                     // Insert document
-                    Task<ResourceResponse<Document>> task = docClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(database, collection),
-                                                                                          provider);
+                    ResourceResponse<Document> response = await docClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(database, collection),
+                                                                                              p);
 
-                    // TODO: Change to asynch operation
-                    // If we make too many attempts too quickly we and use Task.WaitAll below then hundreds of "Request rate is large" exceptions thrown
-                    task.Wait();
-                    //tasks[i++] = task;
+                    //// TODO: Change to asynch operation
+                    //// If we make too many attempts too quickly we and use Task.WaitAll below then hundreds of "Request rate is large" exceptions thrown
+                    //task.Wait();
+                    ////tasks[i++] = task;
+
+
+                    //IEnumerable<Document> docs = docClient.CreateDocumentQuery<Document>(Collection.SelfLink,
+                    //                                   new SqlQuerySpec("SELECT * FROM ukrlp p WHERE p.UnitedKingdomProviderReferenceNumber = @UKPRN",
+                    //                                                    new SqlParameterCollection(new[] {
+                    //                                                                                    new SqlParameter { Name = "@UKPRN", Value = p.UnitedKingdomProviderReferenceNumber }
+                    //                                                    })),
+                    //                new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+                    //               //.Where(s => s.GetPropertyValue<string>("UnitedKingdomProviderReferenceNumber") == p.UnitedKingdomProviderReferenceNumber)  // bang!
+                    //               .AsEnumerable();
+
+                    // Change provider properties and save
+                    //if (docs.Any()) {
+                    Document d = response.Resource; // docs.First();
+                        d.Id = id.ToString();
+                        d.SetPropertyValue("DateUpdated", dateUpdated ?? new DateTime(2000, 1, 1));
+                        d.SetPropertyValue("DateDownloaded", DateTime.Now);
+                        if (dateOnboarded.HasValue)
+                            d.SetPropertyValue("DateOnboarded", dateOnboarded);
+                        if (!string.IsNullOrWhiteSpace(whoUpdated))
+                            d.SetPropertyValue("UpdatedBy", whoUpdated);
+                        if (p.ProviderStatus == "PD1" || p.ProviderStatus == "PD2")
+                            d.SetPropertyValue("Status", Status.Unregistered);
+                        else
+                            d.SetPropertyValue("Status", status); // Status.Registered;
+                        tasks.Add(docClient.ReplaceDocumentAsync(d.SelfLink, d));
+                    //}
+
+                    // Wait for all tasks to complete
+                    Task.WaitAll(tasks.ToArray());
                 }
 
-                // Wait for all tasks to complete
-                //Task.WaitAll(tasks);
-            }
-            catch (DocumentClientException ex) {
+            } catch (DocumentClientException ex) {
                 Exception be = ex.GetBaseException();
                 log.LogError(ex, $"Exception rasied at: {DateTime.Now}\n {be.Message}");
                 throw;

@@ -18,7 +18,7 @@ namespace Dfc.ProviderPortal.Providers
     public static class GetNewProviders
     {
         private class PostData {
-            public string UpdatedAfter { get; set; }
+            public string searchdate { get; set; }
         }
 
         [FunctionName("GetNewProviders")]
@@ -30,16 +30,16 @@ namespace Dfc.ProviderPortal.Providers
             try {
                 // Get passed argument (from query if present, if from JSON posted in body if not)
                 log.LogInformation($"GetNewProviders starting");
-                string UpdatedAfter = req.RequestUri.ParseQueryString()["UpdatedAfter"]?.ToString()
-                                            ?? (await req.Content.ReadAsAsync<PostData>())?.UpdatedAfter;
+                string searchdate = req.RequestUri.ParseQueryString()["searchdate"]?.ToString()
+                                            ?? (await req.Content.ReadAsAsync<PostData>())?.searchdate;
 
-                if (UpdatedAfter == null)
-                    response = req.CreateResponse(HttpStatusCode.BadRequest, ResponseHelper.ErrorMessage("Missing UpdatedAfter argument"));
-                else if (!DateTime.TryParse(UpdatedAfter, out DateTime parsed))
-                    response = req.CreateResponse(HttpStatusCode.BadRequest, ResponseHelper.ErrorMessage("Invalid UpdatedAfter argument"));
+                if (searchdate == null)
+                    response = req.CreateResponse(HttpStatusCode.BadRequest, ResponseHelper.ErrorMessage("Missing searchdate argument"));
+                else if (!DateTime.TryParse(searchdate, out DateTime parsed))
+                    response = req.CreateResponse(HttpStatusCode.BadRequest, ResponseHelper.ErrorMessage("Invalid searchdate argument"));
                 else {
                     // Find matching providers
-                    log.LogInformation($"C# HTTP trigger function processed GetNewProviders request for '{UpdatedAfter}'");
+                    log.LogInformation($"C# HTTP trigger function processed GetNewProviders request for '{searchdate}'");
                     IEnumerable<Providers.Provider> p = new ProviderStorage().GetNewProviders(parsed, log, out long count);
 
                     // Return results

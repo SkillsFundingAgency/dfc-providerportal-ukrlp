@@ -317,6 +317,28 @@ namespace UKRLP.Storage
         }
 
         /// <summary>
+        /// Gets all documents updated after a certain date/time from the collection and returns the data as Provider objects
+        /// </summary>
+        /// <param name="UpdatedAfter">Date/time to find providers updated more recently than</param>
+        /// <param name="log">ILogger for logging info/errors</param>
+        public IEnumerable<Provider> GetNewProviders(DateTime UpdatedAfter, ILogger log, out long count)
+        {
+            try {
+                // Get matching provider by passed date/time from the collection
+                log.LogInformation($"Getting providers from collection updated after {UpdatedAfter}");
+                IQueryable<Provider> qry = docClient.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+                                                    .Where(p => p.DateUpdated >= UpdatedAfter);
+                IEnumerable<Provider> matches = qry.AsEnumerable();
+                count = matches.LongCount();
+                return matches;
+
+            } catch (Exception ex) {
+                log.LogError("Exception thrown in GetNewProviders", ex, "GetNewProviders");
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// Gets all documents for live providers from the collection and returns the data as Provider objects
         /// </summary>
         /// <param name="log">ILogger for logging info/errors</param>

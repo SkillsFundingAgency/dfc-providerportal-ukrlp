@@ -26,10 +26,5 @@ namespace Dfc.ProviderPortal.UKRLP.Models
         string TradingName { get; set; }
         bool NationalApprenticeshipProvider { get; set; }
         string MarketingInformation { get; set; }
-        string Email { get; set; }
-        string Website { get; set; }
-        string Telephone { get; set; }
-        double? LearnerSatisfaction { get; set; }
-        double? EmployerSatisfaction { get; set; }
     }
 }

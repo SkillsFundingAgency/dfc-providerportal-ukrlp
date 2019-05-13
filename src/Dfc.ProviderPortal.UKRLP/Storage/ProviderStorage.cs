@@ -413,5 +413,26 @@ namespace UKRLP.Storage
                 throw ex;
             }
         }
+        public async Task<ResourceResponse<Document>> UpdateFullDocAsync(Provider provider, ILogger log, bool UpdateDateUpdated = true)
+        {
+            try
+            {
+                // Get matching venue by Id from the collection
+                log.LogInformation($"Getting provider from collection with Id {provider?.id}");
+                Document exists = docClient.CreateDocumentQuery(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+                                            .Where(u => u.Id == provider.id.ToString())
+                                            .AsEnumerable()
+                                            .FirstOrDefault();
+                if (exists == null)
+                    return null;
+
+                return await docClient.UpsertDocumentAsync(Collection.SelfLink, provider);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

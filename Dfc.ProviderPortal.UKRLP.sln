@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2016
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UKRLP.ProviderSynchronise", "src\UKRLP.ProviderSynchronise\UKRLP.ProviderSynchronise.csproj", "{E0E19A21-E9A0-4BCE-AF84-6158505A02D7}"
 EndProject
@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.UKRLP", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.UKRLP.API", "src\Dfc.ProviderPortal.UKRLP.API\Dfc.ProviderPortal.UKRLP.API.csproj", "{0D93019E-C4CC-40AD-85C3-B64E5277CA8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DFC.ProviderPortal.Providers.Tests", "tests\DFC.ProviderPortal.Providers.Tests\DFC.ProviderPortal.Providers.Tests.csproj", "{9CA538A9-0E6B-4218-872F-E787B841C7FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.ProviderPortal.Providers.Tests", "tests\DFC.ProviderPortal.Providers.Tests\DFC.ProviderPortal.Providers.Tests.csproj", "{9CA538A9-0E6B-4218-872F-E787B841C7FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

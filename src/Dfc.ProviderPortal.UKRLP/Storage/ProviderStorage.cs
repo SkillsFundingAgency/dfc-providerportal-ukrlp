@@ -326,7 +326,7 @@ namespace UKRLP.Storage
             try {
                 // Get matching provider by passed date/time from the collection
                 log.LogInformation($"Getting providers from collection updated after {UpdatedAfter}");
-                IQueryable<Provider> qry = docClient.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+                IQueryable<Provider> qry = docClient.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1, EnableScanInQuery = true })
                                                     .Where(p => p.DateUpdated >= UpdatedAfter);
                 IEnumerable<Provider> matches = qry.AsEnumerable();
                 count = matches.LongCount();

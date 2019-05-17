@@ -1,0 +1,15 @@
+[
+  {
+    "name": "provider",
+    "fields": [
+      {"name": "id", "type": "Edm.String", "key": true, "sortable": false, "facetable": false, "searchable": false},
+      {"name": "UKPRN", "type": "Edm.String", "facetable": false},
+      {"name": "Name", "type": "Edm.String", "facetable": false},
+      {"name": "Town", "type": "Edm.String"},
+      {"name": "Postcode", "type": "Edm.String", "sortable": false, "facetable": false},
+      {"name": "Region", "type": "Edm.String"},
+      {"name": "DateUpdated", "type": "Edm.DateTimeOffset", "sortable": false, "facetable": false},
+      {"name": "DateOnboarded", "type": "Edm.DateTimeOffset", "sortable": false, "facetable": false}
+    ]
+  }
+]

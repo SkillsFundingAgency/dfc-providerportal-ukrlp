@@ -1,0 +1,12 @@
+[
+    {
+        "name": "providerdaily",
+        "description": "Daily update provider index",
+        "dataSourceName": "cdb-providerportal-ukrlp-contacttypep",
+        "targetIndexName": "provider",
+        "schedule": {
+            "interval": "P1D",
+            "startTime": "2018-12-21T08:00:00Z"
+        }
+    }
+]

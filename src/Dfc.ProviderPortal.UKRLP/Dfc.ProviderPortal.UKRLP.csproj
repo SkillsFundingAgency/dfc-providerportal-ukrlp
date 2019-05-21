@@ -37,6 +37,7 @@
     <Folder Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Dfc.ProviderPortal.UKRLP.Models\Dfc.ProviderPortal.UKRLP.Models.csproj" />
     <ProjectReference Include="..\UKRLP.ProviderSynchronise\UKRLP.ProviderSynchronise.csproj" />
   </ItemGroup>
 </Project>

@@ -14,7 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Dfc.ProviderPortal.UKRLP.Models\Dfc.ProviderPortal.UKRLP.Models.csproj" />
     <ProjectReference Include="..\..\src\Dfc.ProviderPortal.UKRLP\Dfc.ProviderPortal.UKRLP.csproj" />
+    <ProjectReference Include="..\..\src\UKRLP.ProviderSynchronise\UKRLP.ProviderSynchronise.csproj" />
   </ItemGroup>
 
 </Project>

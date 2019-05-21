@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.UKRLP", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.UKRLP.API", "src\Dfc.ProviderPortal.UKRLP.API\Dfc.ProviderPortal.UKRLP.API.csproj", "{0D93019E-C4CC-40AD-85C3-B64E5277CA8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DFC.ProviderPortal.Providers.Tests", "tests\DFC.ProviderPortal.Providers.Tests\DFC.ProviderPortal.Providers.Tests.csproj", "{9CA538A9-0E6B-4218-872F-E787B841C7FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.ProviderPortal.Providers.Tests", "tests\DFC.ProviderPortal.Providers.Tests\DFC.ProviderPortal.Providers.Tests.csproj", "{9CA538A9-0E6B-4218-872F-E787B841C7FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfc.ProviderPortal.UKRLP.Models", "src\Dfc.ProviderPortal.UKRLP.Models\Dfc.ProviderPortal.UKRLP.Models.csproj", "{490F1175-D848-4A16-AE32-88CAD0F502DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{9CA538A9-0E6B-4218-872F-E787B841C7FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CA538A9-0E6B-4218-872F-E787B841C7FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CA538A9-0E6B-4218-872F-E787B841C7FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{490F1175-D848-4A16-AE32-88CAD0F502DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{490F1175-D848-4A16-AE32-88CAD0F502DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{490F1175-D848-4A16-AE32-88CAD0F502DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{490F1175-D848-4A16-AE32-88CAD0F502DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

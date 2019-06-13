@@ -40,7 +40,7 @@ namespace Dfc.ProviderPortal.Providers
         public bool NationalApprenticeshipProvider { get; set; }
         public string MarketingInformation { get; set; }
         public string Alias { get; set; }
-
+        public ProviderType ProviderType { get; set; }
 
 
         public Provider(Providercontact[] providercontact, Provideralias[] provideraliases, Verificationdetail[] verificationdetails)
@@ -123,4 +123,11 @@ namespace Dfc.ProviderPortal.Providers
         public string VerificationID { get; set; }
     }
 
+   public enum ProviderType
+    {
+         undefined = 0,
+         Fe = 1,
+         Apprenticeship = 2,
+         Both = Fe | Apprenticeship
+    }
 }

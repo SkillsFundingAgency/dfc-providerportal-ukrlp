@@ -33,6 +33,16 @@ namespace Dfc.ProviderPortal.Providers
         public DateTime DateUpdated { get; set; }
         public string UpdatedBy { get; set; }
 
+        // Apprenticeship related
+        public int? ProviderId { get; set; }
+        public int? UPIN { get; set; } // Needed to get LearnerSatisfaction & EmployerSatisfaction from FEChoices
+        public string TradingName { get; set; }
+        public bool NationalApprenticeshipProvider { get; set; }
+        public string MarketingInformation { get; set; }
+        public string Alias { get; set; }
+        public ProviderType ProviderType { get; set; }
+
+
         public Provider(Providercontact[] providercontact, Provideralias[] provideraliases, Verificationdetail[] verificationdetails)
         {
             ProviderContact = providercontact;
@@ -113,4 +123,11 @@ namespace Dfc.ProviderPortal.Providers
         public string VerificationID { get; set; }
     }
 
+   public enum ProviderType
+    {
+         undefined = 0,
+         Fe = 1,
+         Apprenticeship = 2,
+         Both = Fe | Apprenticeship
+    }
 }

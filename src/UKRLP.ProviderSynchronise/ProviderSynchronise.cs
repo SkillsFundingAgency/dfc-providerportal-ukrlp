@@ -25,7 +25,7 @@ namespace UKRLP.ProviderSynchronise
                     //"V", // Verified                      // Omitted, we suspect this may be a subset of Active providers
                     "PD1", // Deactivation in process
                     "PD2" // Deactivation complete
-                };
+            };
 
             List<ProviderRecordStructure> results = new List<ProviderRecordStructure>();
             var request = Request(dtLastUpdate);
@@ -58,12 +58,11 @@ namespace UKRLP.ProviderSynchronise
                 CriteriaCondition = QueryCriteriaConditionType.OR,
                 CriteriaConditionSpecified = true
             };
-            ProviderQueryStructure pqs = new ProviderQueryStructure { SelectionCriteria = scs };
 
-            List<String> deletedItems = new List<String>();
-            String[] activeStatuses = { "A", "V" };
-            return pqs;
+            //ProviderQueryStructure pqs = new ProviderQueryStructure { SelectionCriteria = scs };
+            return new ProviderQueryStructure { SelectionCriteria = scs }; //pqs };
         }
+
         private static String GetNextQueryId()
         {
             Int32 id = 0;

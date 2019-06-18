@@ -19,8 +19,6 @@ namespace UKRLP.ProviderSynchronise
 
         public List<ProviderRecordStructure> SynchroniseProviders(DateTime dtLastUpdate, ILogger log)
         {
-            List<ProviderRecordStructure> results = new List<ProviderRecordStructure>();
-
             string[] statusesToFetch =
             {
                     "A", // Active
@@ -28,6 +26,8 @@ namespace UKRLP.ProviderSynchronise
                     "PD1", // Deactivation in process
                     "PD2" // Deactivation complete
                 };
+
+            List<ProviderRecordStructure> results = new List<ProviderRecordStructure>();
             var request = Request(dtLastUpdate);
             foreach (String status in statusesToFetch)
             {
@@ -36,21 +36,13 @@ namespace UKRLP.ProviderSynchronise
                 request.SelectionCriteria.ProviderStatus = status;
                 request.QueryId = GetNextQueryId();
 
-                var pqp = new ProviderQueryParam {
-                    ProviderQueryRequest = request
-                };
-                var retrieveall = new ProviderQueryPortTypeClient();
-
-                Task<response> x = retrieveall.retrieveAllProvidersAsync(request);
+                var pqp = new ProviderQueryParam { ProviderQueryRequest = request };
+                Task<response> x = new ProviderQueryPortTypeClient().retrieveAllProvidersAsync(request);
                 x.Wait();
 
-                //return JsonConvert.SerializeObject(x.Result.ProviderQueryResponse.MatchingProviderRecords);
-                //return x.Result.ProviderQueryResponse.MatchingProviderRecords;
-
-                log.LogInformation($"UKRLP service returned {x.Result.ProviderQueryResponse.MatchingProviderRecords.LongLength} providers with status {status}");
-                results.AddRange(x.Result.ProviderQueryResponse.MatchingProviderRecords);
+                log.LogInformation($"UKRLP service returned {x.Result?.ProviderQueryResponse?.MatchingProviderRecords?.LongLength ?? 0} providers with status {status}");
+                results.AddRange(x.Result?.ProviderQueryResponse?.MatchingProviderRecords ?? new ProviderRecordStructure[] { });
             }
-            //return null;
             return results;
         }
 
@@ -66,40 +58,16 @@ namespace UKRLP.ProviderSynchronise
                 CriteriaCondition = QueryCriteriaConditionType.OR,
                 CriteriaConditionSpecified = true
             };
-            ProviderQueryStructure pqs = new ProviderQueryStructure
-            {
-                SelectionCriteria = scs
-            };
-
-
+            ProviderQueryStructure pqs = new ProviderQueryStructure { SelectionCriteria = scs };
 
             List<String> deletedItems = new List<String>();
-            String[] activeStatuses =
-            {
-                    "A",
-                    "V"
-                };
-
+            String[] activeStatuses = { "A", "V" };
             return pqs;
         }
         private static String GetNextQueryId()
         {
             Int32 id = 0;
-            //try
-            //{
-            //    using (StreamReader sr = new StreamReader("NextQueryId.txt"))
-            //    {
-            //        String line = sr.ReadToEnd();
-            //        Int32.TryParse(line, out id);
-            //    }
-            //}
-            //catch
-            //{ }
-
             id++;
-
-            //File.WriteAllText("NextQueryId.txt", id.ToString());
-
             return id.ToString();
         }
 

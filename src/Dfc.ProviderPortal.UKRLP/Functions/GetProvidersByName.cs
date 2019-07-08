@@ -22,7 +22,7 @@ namespace Dfc.ProviderPortal.Providers
         }
 
         [FunctionName("GetProvidersByName")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req,
                                                           ILogger log)
         {
             // Get passed argument (from query if present, if from JSON posted in body if not)

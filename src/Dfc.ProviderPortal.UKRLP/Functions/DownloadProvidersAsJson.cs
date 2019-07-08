@@ -20,7 +20,7 @@ namespace Dfc.ProviderPortal.Providers
     public static class DownloadProvidersAsJson
     {
         [FunctionName("DownloadProvidersAsJson")]
-        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req,
+        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req,
                                                           ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");

@@ -19,7 +19,7 @@ namespace Dfc.ProviderPortal.Providers
     public static class UpdateProviderById
     {
         [FunctionName("UpdateProviderById")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req,
                                                           ILogger log)
         {
             Provider provider = null;

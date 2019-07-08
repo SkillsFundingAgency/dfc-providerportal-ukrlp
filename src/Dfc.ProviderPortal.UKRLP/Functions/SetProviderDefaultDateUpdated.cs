@@ -21,7 +21,7 @@ namespace Dfc.ProviderPortal.Providers
     public static class SetProviderDefaultDateUpdated
     {
         [FunctionName("SetProviderDefaultDateUpdated")]
-        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req,
+        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req,
                                                      ILogger log)
         {
             log.LogInformation("SetProviderDefaultDateUpdated HTTP trigger function processed a request.");

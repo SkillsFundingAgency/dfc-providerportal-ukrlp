@@ -21,7 +21,7 @@ namespace Dfc.ProviderPortal.UKRLP.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateProviderById(Provider provider, [Required]string code)
+        public IActionResult UpdateProviderById(Provider provider)
         {
             return Ok();
         }
@@ -32,7 +32,7 @@ namespace Dfc.ProviderPortal.UKRLP.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateProviderDetails(Provider provider, [Required]string code)
+        public IActionResult UpdateProviderDetails(Provider provider)
         {
             return Ok();
         }
@@ -43,7 +43,7 @@ namespace Dfc.ProviderPortal.UKRLP.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetAllProviders([Required]string code)
+        public IActionResult GetAllProviders()
         {
             return Ok();
         }
@@ -54,7 +54,7 @@ namespace Dfc.ProviderPortal.UKRLP.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetProviderByPRN(string PRN, [Required]string code)
+        public IActionResult GetProviderByPRN(string PRN)
         {
             return Ok();
         }
@@ -65,7 +65,7 @@ namespace Dfc.ProviderPortal.UKRLP.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetProvidersByName(string Name, [Required]string code)
+        public IActionResult GetProvidersByName(string Name)
         {
             return Ok();
         }
@@ -76,21 +76,10 @@ namespace Dfc.ProviderPortal.UKRLP.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetProvidersByName([Required]string code)
+        public IActionResult SetProviderDefaultDateUpdated()
         {
             return Ok();
         }
-
-        //[Route("DownloadProvidersAsJson")]
-        //[HttpGet]
-        //[ProducesResponseType(typeof(Stream), StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //public IActionResult DownloadProvidersAsJson([Required]string code)
-        //{
-        //    return Ok();
-        //}
 
         [Route("SyncProviders")]
         [HttpGet]
@@ -98,7 +87,7 @@ namespace Dfc.ProviderPortal.UKRLP.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult SyncProviders([Required]string code)
+        public IActionResult SyncProviders()
         {
             return Ok();
         }
@@ -109,7 +98,7 @@ namespace Dfc.ProviderPortal.UKRLP.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetLiveProvidersForAzureSearch([Required]string code)
+        public IActionResult GetLiveProvidersForAzureSearch()
         {
             return Ok();
         }

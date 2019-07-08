@@ -23,7 +23,7 @@ namespace Dfc.ProviderPortal.Providers
         //}
 
         [FunctionName("GetLiveProvidersForAzureSearch")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req,
                                                           ILogger log)
         {
             HttpResponseMessage response = req.CreateResponse(HttpStatusCode.InternalServerError);

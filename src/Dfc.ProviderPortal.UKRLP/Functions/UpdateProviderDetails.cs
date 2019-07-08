@@ -19,7 +19,7 @@ namespace Dfc.ProviderPortal.UKRLP.Functions
     public static class UpdateProviderDetails
     {
         [FunctionName("UpdateProviderDetails")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage req,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req,
                                                           ILogger log)
         {
             Provider provider = await req.Content.ReadAsAsync<Provider>();

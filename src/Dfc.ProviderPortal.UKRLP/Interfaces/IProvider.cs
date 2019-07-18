@@ -10,6 +10,7 @@ namespace Dfc.ProviderPortal.UKRLP.Models
         Guid id { get; set; }
         string UnitedKingdomProviderReferenceNumber { get; set; }
         string ProviderName { get; set; }
+        string CourseDirectoryName { get; set; }
         string ProviderStatus { get; set; }
         IProvidercontact[] ProviderContact { get; set; }
         DateTime ProviderVerificationDate { get; set; }

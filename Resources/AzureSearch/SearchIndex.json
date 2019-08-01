@@ -2,14 +2,94 @@
   {
     "name": "provider",
     "fields": [
-      {"name": "id", "type": "Edm.String", "key": true, "sortable": false, "facetable": false, "searchable": false},
-      {"name": "UKPRN", "type": "Edm.String", "facetable": false},
-      {"name": "Name", "type": "Edm.String", "facetable": false},
-      {"name": "Town", "type": "Edm.String"},
-      {"name": "Postcode", "type": "Edm.String", "sortable": false, "facetable": false},
-      {"name": "Region", "type": "Edm.String"},
-      {"name": "DateUpdated", "type": "Edm.DateTimeOffset", "sortable": false, "facetable": false},
-      {"name": "DateOnboarded", "type": "Edm.DateTimeOffset", "sortable": false, "facetable": false}
+      {
+        "name": "id",
+        "type": "Edm.String",
+        "key": true,
+        "sortable": false,
+        "facetable": false,
+        "searchable": false
+      },
+      {
+        "name": "UKPRN",
+        "type": "Edm.String",
+        "facetable": false
+      },
+      {
+        "name": "Name",
+        "type": "Edm.String",
+        "facetable": false
+      },
+      {
+        "name": "Town",
+        "type": "Edm.String"
+      },
+      {
+        "name": "Postcode",
+        "type": "Edm.String",
+        "sortable": false,
+        "facetable": false
+      },
+      {
+        "name": "Region",
+        "type": "Edm.String"
+      },
+      {
+        "name": "DateUpdated",
+        "type": "Edm.DateTimeOffset",
+        "sortable": false,
+        "facetable": false
+      },
+      {
+        "name": "DateOnboarded",
+        "type": "Edm.DateTimeOffset",
+        "sortable": false,
+        "facetable": false
+      },
+      {
+        "name": "Status",
+        "type": "Edm.Int32",
+        "sortable": false,
+        "facetable": false
+      },
+      {
+        "name": "ProviderStatus",
+        "type": "Edm.String",
+        "sortable": false,
+        "facetable": false
+      },
+      {
+        "name": "CourseDirectoryName",
+        "type": "Edm.String",
+        "sortable": false,
+        "facetable": false
+      },
+      {
+        "name": "TradingName",
+        "type": "Edm.String",
+        "sortable": false,
+        "facetable": false
+      },
+      {
+        "name": "ProviderAliases",
+        "type": "Edm.ComplexType",
+        "fields": [
+          {
+            "name": "ProviderAlias",
+            "type": "Edm.String",
+            "sortable": false,
+            "facetable": false
+          },
+          {
+            "name": "LastUpdated",
+            "type": "Edm.DateTimeOffset",
+            "sortable": true,
+            "facetable": true
+          }
+        ]
+      }
+
+
     ]
   }
 ]

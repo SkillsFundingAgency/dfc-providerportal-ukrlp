@@ -69,27 +69,8 @@
         "type": "Edm.String",
         "sortable": false,
         "facetable": false
-      },
-      {
-        "name": "ProviderAliases",
-        "type": "Edm.ComplexType",
-        "fields": [
-          {
-            "name": "ProviderAlias",
-            "type": "Edm.String",
-            "sortable": false,
-            "facetable": false
-          },
-          {
-            "name": "LastUpdated",
-            "type": "Edm.DateTimeOffset",
-            "sortable": true,
-            "facetable": true
-          }
-        ]
       }
-
-
+     
     ]
   }
 ]

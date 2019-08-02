@@ -11,6 +11,10 @@ namespace Dfc.ProviderPortal.Providers
         public Guid? id { get; set; }
         public int UnitedKingdomProviderReferenceNumber { get; set; }
         public string ProviderName { get; set; }
+        public Status Status { get; set; }
+        public string ProviderStatus { get; set; }
+        public string CourseDirectoryName { get; set; }
+        public string TradingName { get; set; }
     }
 
 }

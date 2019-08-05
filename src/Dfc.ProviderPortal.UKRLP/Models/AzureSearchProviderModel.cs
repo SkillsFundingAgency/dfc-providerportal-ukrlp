@@ -15,6 +15,8 @@ namespace Dfc.ProviderPortal.Providers
         public string ProviderStatus { get; set; }
         public string CourseDirectoryName { get; set; }
         public string TradingName { get; set; }
+        public string ProviderAlias { get; set; }
+        
     }
 
 }

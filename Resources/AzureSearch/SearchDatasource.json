@@ -1,26 +1,42 @@
 [
-    {
-        "name" : "cdb-providerportal-ukrlp-contacttypep",
-        "type" : "documentdb",
-        "description": "Cosmos DB, providerportal database, ukrlp collection, only contact type P",
-        "credentials" :
-        {
-            "connectionString": "__providerPortalCosmosDbConnectionString__"
-        },
-        "container" :
-        {
-            "name" : "ukrlp",
-            "query" : "SELECT VALUE { 'id':c.id, '_ts':c._ts, 'UKPRN':c.UnitedKingdomProviderReferenceNumber, 'Name':c.ProviderName,
-'Status':c.Status,
-'ProviderStatus':c.ProviderStatus,
-'CourseDirectoryName':c.CourseDirectoryName,
-'ProviderAlias':c.ProviderAliases[0].ProviderAlias,
-'TradingName':c.TradingName,
- 'Region':c.Region, 'DateUpdated':c.DateUpdated, 'DateOnboarded':c.DateOnboarded, 'ContactType':a.ContactType, 'PostCode':a.ContactAddress.PostCode, 'Towns':a.ContactAddress.Items, 'Town':a.ContactAddress.Items[0] } FROM c JOIN a IN c.ProviderContact WHERE a.ContactType = 'P' AND c._ts >= @HighWaterMark ORDER BY c._ts"
-        },
-        "dataChangeDetectionPolicy": {
-            "@odata.type" : "#Microsoft.Azure.Search.HighWaterMarkChangeDetectionPolicy",
-            "highWaterMarkColumnName" : "_ts"
-        }
-    }
+  {
+    "name": "cdb-providerportal-ukrlp-contacttypep",
+    "type": "documentdb",
+    "description": "Cosmos DB, providerportal database, ukrlp collection, only contact type P",
+    "credentials": {
+      "connectionString": "__providerPortalCosmosDbConnectionString__"
+    },
+    "container": {
+      "name": "ukrlp",
+      "query": "\"SELECT VALUE { 'id':c.id, '_ts':c._ts, 'UKPRN':c.UnitedKingdomProviderReferenceNumber, 'Name':c.ProviderName,",
+      "Status": "c.Status",
+      "ProviderStatus": "c.ProviderStatus",
+      "CourseDirectoryName": "c.CourseDirectoryName",      
+      "TradingName": "c.TradingName",
+      "Region": "c.Region",
+      "DateUpdated": "c.DateUpdated",
+      "DateOnboarded": "c.DateOnboarded",
+      "ContactType": "a.ContactType",
+      "PostCode": "a.ContactAddress.PostCode",
+      "Towns": "a.ContactAddress.Items",
+      "Town": "a.ContactAddress.Items",
+      [ 0 ]
+    },
+    "FROM" "c",
+    "JOIN" "a",
+    "IN" "c.ProviderContact",
+    "WHERE" "a.ContactType",
+    "=" "P",
+    "AND" "c._ts",
+    ">=" "@HighWaterMark",
+    "ORDER" "BY",
+    "c._ts\""
+  },
+  "dataChangeDetectionPolicy",
+  :,
+  {
+    "@odata.type": "#Microsoft.Azure.Search.HighWaterMarkChangeDetectionPolicy",
+    "highWaterMarkColumnName": "_ts"
+  },
+  }
 ]

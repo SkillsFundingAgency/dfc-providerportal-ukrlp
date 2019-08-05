@@ -333,11 +333,14 @@ namespace UKRLP.Storage
                                                                        id = p.id,
                                                                        UnitedKingdomProviderReferenceNumber = int.Parse(p.UnitedKingdomProviderReferenceNumber),
                                                                        ProviderName = p.ProviderName,
-                                                                       Status=p.Status,
-                                                                       ProviderStatus=p.ProviderStatus,
-                                                                       CourseDirectoryName=p.CourseDirectoryName,
-                                                                       TradingName=p.TradingName
-                                                                   });
+                                                                       Status = p.Status,
+                                                                       ProviderStatus = p.ProviderStatus,
+                                                                       CourseDirectoryName = p.CourseDirectoryName,
+                                                                       TradingName = p.TradingName,
+                                                                       ProviderAlias = p.Alias
+                                                                   }
+                                                                  
+                                                                   ); 
                 count = matches.LongCount();
                 return matches;
 

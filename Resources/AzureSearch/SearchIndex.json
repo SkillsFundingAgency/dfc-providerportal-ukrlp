@@ -69,12 +69,6 @@
         "type": "Edm.String",
         "sortable": false,
         "facetable": false
-      },
-      {
-        "name": "ProviderAlias",
-        "type": "Edm.String",
-        "sortable": false,
-        "facetable": false
       }
      
     ]

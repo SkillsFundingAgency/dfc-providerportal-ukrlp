@@ -75,8 +75,7 @@
         "type": "Edm.String",
         "sortable": false,
         "facetable": false
-      }
-     
+      }     
     ]
   }
 ]

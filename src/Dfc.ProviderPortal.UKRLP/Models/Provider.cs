@@ -43,6 +43,8 @@ namespace Dfc.ProviderPortal.Providers
         public string Alias { get; set; }
         public ProviderType ProviderType { get; set; }
 
+        // Bulk course upload
+        public BulkUploadStatus BulkUploadStatus { get; set; }
 
         public Provider(Providercontact[] providercontact, Provideralias[] provideraliases, Verificationdetail[] verificationdetails)
         {

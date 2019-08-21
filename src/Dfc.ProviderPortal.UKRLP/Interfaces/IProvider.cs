@@ -27,5 +27,7 @@ namespace Dfc.ProviderPortal.UKRLP.Models
         string TradingName { get; set; }
         bool NationalApprenticeshipProvider { get; set; }
         string MarketingInformation { get; set; }
+
+        BulkUploadStatus BulkUploadStatus { get; set; }
     }
 }

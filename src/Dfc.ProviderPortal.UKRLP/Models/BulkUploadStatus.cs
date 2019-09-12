@@ -7,5 +7,6 @@ namespace Dfc.ProviderPortal.UKRLP.Models
         public bool InProgress { get; set; }
         public DateTime? StartedTimestamp { get; set; }
         public int? TotalRowCount { get; set; }
+        public bool PublishInProgress { get; set; }
     }
 }

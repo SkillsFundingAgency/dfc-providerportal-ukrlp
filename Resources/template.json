@@ -68,6 +68,12 @@
         "description": "Cosmos DB access key for app settings"
       }
     },
+    "cosmosDbAccount": {
+      "type": "string",
+      "metadata": {
+        "description": "Cosmos DB database name for creating collections"
+      }
+    },
     "cosmosDBdatabase": {
       "type": "string",
       "metadata": {
@@ -221,6 +227,33 @@
           },
           "apiSuffix": {
             "value": "[parameters('apiSuffix')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "cosmosCollectionUkrlp",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('appServicePlanResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+            "uri": "[concat(variables('deploymentUrlBase'),'CosmosDb/cosmos-collection.json')]",
+            "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "accountName": {
+              "value": "[parameters('cosmosDbAccount')]"
+          },
+          "databaseName": {
+              "value": "[parameters('cosmosDBdatabase')]"
+          },
+          "collectionName": {
+              "value": "ukrlp"
+          },
+          "offerThroughput": {
+              "value": 400
           }
         }
       }

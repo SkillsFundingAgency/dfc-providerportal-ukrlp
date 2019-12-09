@@ -153,6 +153,14 @@
                 "name": "AzureWebJobsStorage",
                 "value": "[parameters('storageConnectionString')]"
               },
+              { 
+                "name": "WEBSITE_RUN_FROM_PACKAGE", 
+                "value": "1" 
+              },
+              {
+                "name": "FUNCTIONS_WORKER_RUNTIME",
+                "value": "dotnet"
+              },
               {
                 "name": "StorageURI",
                 "value": "[parameters('cosmosDBfqdn')]"
@@ -172,61 +180,7 @@
             ]
           },
           "deployStagingSlot": {
-            "value": false
-          }
-        }
-      }
-    },
-    {
-      "name": "ppukrlpApimProduct",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2017-05-10",
-      "resourceGroup": "[parameters('apimResourceGroup')]",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'), 'APIM/apim-product.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "allowAnonymousAccess": {
-            "value": false
-          },
-          "apimServiceName": {
-            "value": "[parameters('apimServiceName')]"
-          },
-          "productDisplayName": {
-            "value": "[parameters('apiProductDisplayName')]"
-          }
-        }
-      }
-    },
-    {
-      "name": "ppukrlpApimApi",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2017-05-10",
-      "resourceGroup": "[parameters('apimResourceGroup')]",
-      "dependsOn": [
-        "ppukrlpApimProduct"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'), 'APIM/apim-api.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "apimProductInstanceName": {
-            "value": "[reference('ppukrlpApimProduct').outputs.ApimProductInstanceName.value]"
-          },
-          "apimServiceName": {
-            "value": "[parameters('apimServiceName')]"
-          },
-          "apiName": {
-            "value": "[parameters('apiName')]"
-          },
-          "apiSuffix": {
-            "value": "[parameters('apiSuffix')]"
+            "value": true
           }
         }
       }

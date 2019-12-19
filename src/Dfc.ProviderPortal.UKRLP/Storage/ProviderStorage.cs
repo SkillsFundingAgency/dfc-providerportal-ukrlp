@@ -326,7 +326,7 @@ namespace UKRLP.Storage
                 // Get live providers from the collection
                 log.LogInformation($"Getting live providers from collection");
                 IQueryable<Provider> qry = docClient.CreateDocumentQuery<Provider>(Collection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
-                                                    .Where(p => p.Status == Status.Onboarded);
+                                                    .Where(p => p.Status == Status.Onboarded && p.ProviderStatus == "Active");
                 IEnumerable<AzureSearchProviderModel> matches = qry.AsEnumerable()
                                                                    .Select(p => new AzureSearchProviderModel()
                                                                    {

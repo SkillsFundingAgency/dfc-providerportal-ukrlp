@@ -8,36 +8,6 @@
         "description": "Prefix for the function app resources, in the form dfc-env-proj-fnapp"
       }
     },
-    "apimResourceGroup": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the shared resources Resource Group"
-      }
-    },
-    "apimServiceName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the shared APIM service"
-      }
-    },
-    "apiName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the API"
-      }
-    },
-    "apiProductDisplayName": {
-      "type": "string",
-      "metadata": {
-        "description": "The display name for the projects APIM product"
-      }
-    },
-    "apiSuffix": {
-      "type": "string",
-      "metadata": {
-        "description": "Section of URL path that will preceed the path defined in code"
-      }
-    },
     "appServicePlanName": {
       "type": "string",
       "metadata": {

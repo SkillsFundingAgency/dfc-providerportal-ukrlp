@@ -13,6 +13,7 @@ namespace Dfc.ProviderPortal.UKRLP
 {
     public static class SchedulesProviderSync
     {
+        [Disable]
         [FunctionName("ScheduledProviderDownload")]
         public static void Run([TimerTrigger("0 0 0 */1 * *")]TimerInfo myTimer, ILogger log) {     // Every 24 hrs normally
         //public static void Run([TimerTrigger("0 */1 * * * *")]TimerInfo myTimer, ILogger log) {   // Every minute for debug

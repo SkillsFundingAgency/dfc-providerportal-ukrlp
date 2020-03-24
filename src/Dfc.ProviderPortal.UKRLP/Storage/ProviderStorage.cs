@@ -317,6 +317,31 @@ namespace UKRLP.Storage
         }
 
         /// <summary>
+        /// Gets all active Providers from the Cosmos collection
+        /// </summary>
+        /// <param name="log">logger for errors</param>
+        /// <returns></returns>
+        public async Task<IEnumerable<Provider>> GetAllActive(ILogger log)
+        {
+            try
+            {
+                log.LogInformation("Getting all active providers from collection");
+
+                var results = docClient.CreateDocumentQuery<Provider>(Collection.SelfLink,
+                        new FeedOptions {EnableCrossPartitionQuery = true, MaxItemCount = -1})
+                    .Where(p => p.Status == Status.Onboarded && p.ProviderStatus == "Active")
+                    .AsEnumerable();
+
+                return results;
+            }
+            catch (Exception ex)
+            {
+                log.LogError("Exception thrown in GetAllActive", ex, "GetAllActive");
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// Gets all documents for live providers from the collection and returns the data as Provider objects
         /// </summary>
         /// <param name="log">ILogger for logging info/errors</param>

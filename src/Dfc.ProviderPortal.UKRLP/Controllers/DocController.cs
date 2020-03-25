@@ -48,6 +48,17 @@ namespace Dfc.ProviderPortal.UKRLP.Controllers
             return Ok();
         }
 
+        [Route("GetActiveProviders")]
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Provider>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetActiveProviders()
+        {
+            return Ok();
+        }
+
         [Route("GetProviderByPRN")]
         [HttpGet]
         [ProducesResponseType(typeof(Provider), StatusCodes.Status200OK)]

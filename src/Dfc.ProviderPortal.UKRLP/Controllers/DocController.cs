@@ -38,7 +38,7 @@ namespace Dfc.ProviderPortal.UKRLP.Controllers
         }
 
         [Route("GetAllProviders")]
-        [HttpPost]
+        [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Provider>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

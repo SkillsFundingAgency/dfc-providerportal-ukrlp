@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /src/Dfc.ProviderPortal.UKRLP.API/Properties/launchSettings.json
+src/Dfc.ProviderPortal.UKRLP/local.settings.json

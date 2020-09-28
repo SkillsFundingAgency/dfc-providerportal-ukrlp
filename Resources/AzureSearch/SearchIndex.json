@@ -1,6 +1,6 @@
 [
   {
-    "name": "provider",
+    "name": "provider2",
     "fields": [
       {
         "name": "id",
@@ -18,7 +18,8 @@
       {
         "name": "Name",
         "type": "Edm.String",
-        "facetable": false
+        "facetable": false,
+        "analyzer": "en.microsoft"
       },
       {
         "name": "Town",

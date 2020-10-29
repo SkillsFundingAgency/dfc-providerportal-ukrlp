@@ -130,7 +130,6 @@ namespace Dfc.ProviderPortal.Providers
     {
          undefined = 0,
          Fe = 1,
-         Apprenticeship = 2,
-         Both = Fe | Apprenticeship
+         Apprenticeship = 2
     }
 }

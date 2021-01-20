@@ -28,6 +28,9 @@
     },
     "cosmosDBcollection": {
       "value": "mycoll"
+    },
+    "providerPortalApplicationInsights":{
+      "value": "dfc-dev-prov-as-ai"
     }
   }
 }

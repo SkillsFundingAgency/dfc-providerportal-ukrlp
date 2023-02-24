@@ -24,9 +24,9 @@ namespace Dfc.ProviderPortal.UKRLP
         {
             services
                 .AddMvcCore()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver())
-                .AddApiExplorer();
+                .AddNewtonsoftJson(option => option.SerializerSettings.ContractResolver = new DefaultContractResolver()
+                ).AddApiExplorer();
+
 
             services.AddSwaggerGen(c =>
             {

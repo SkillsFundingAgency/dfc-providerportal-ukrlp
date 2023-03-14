@@ -361,8 +361,6 @@ namespace UKRLP.Storage
                                                                        Status = p.Status,
                                                                        ProviderStatus = p.ProviderStatus,
                                                                        CourseDirectoryName = p.CourseDirectoryName,
-                                                                       TradingName = p.TradingName,
-                                                                       ProviderAlias = p.Alias
                                                                    }
                                                                   
                                                                    ); 

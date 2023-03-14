@@ -21,13 +21,6 @@ namespace Dfc.ProviderPortal.UKRLP.Models
         IVerificationdetail[] VerificationDetails { get; set; }
         Status Status { get; set; }
 
-        // Apprenticeship related
-        int? ProviderId { get; set; }
-        int? UPIN { get; set; } // Needed to get LearnerSatisfaction & EmployerSatisfaction from FEChoices
-        string TradingName { get; set; }
-        bool NationalApprenticeshipProvider { get; set; }
-        string MarketingInformation { get; set; }
-
         BulkUploadStatus BulkUploadStatus { get; set; }
     }
 }

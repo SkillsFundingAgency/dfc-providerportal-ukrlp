@@ -28,6 +28,9 @@
     },
     "cosmosDBcollection": {
       "value": "__cosmosCollection__"
+    },
+    "providerPortalApplicationInsights": {
+      "value": "__providerportalApplicationInsights__"
     }
   }
 }

@@ -30,7 +30,7 @@ namespace Dfc.ProviderPortal.Providers
         public IVerificationdetail[] VerificationDetails { get; set; }
         public Status Status { get; set; }
         public DateTime DateDownloaded { get; set; }
-        public DateTime DateOnboarded { get; set; }
+        public DateTime? DateOnboarded { get; set; }
         public DateTime DateUpdated { get; set; }
         public string UpdatedBy { get; set; }
 
@@ -130,7 +130,6 @@ namespace Dfc.ProviderPortal.Providers
     {
          undefined = 0,
          Fe = 1,
-         Apprenticeship = 2,
-         Both = Fe | Apprenticeship
+         Apprenticeship = 2
     }
 }

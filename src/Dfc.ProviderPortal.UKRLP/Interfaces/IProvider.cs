@@ -20,7 +20,7 @@ namespace Dfc.ProviderPortal.UKRLP.Models
         IProvideralias[] ProviderAliases { get; set; }
         IVerificationdetail[] VerificationDetails { get; set; }
         Status Status { get; set; }
-
+        int? ProviderId { get; set; }
         BulkUploadStatus BulkUploadStatus { get; set; }
     }
 }

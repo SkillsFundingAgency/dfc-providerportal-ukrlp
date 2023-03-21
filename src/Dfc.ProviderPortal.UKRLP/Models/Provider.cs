@@ -34,6 +34,7 @@ namespace Dfc.ProviderPortal.Providers
         public DateTime DateUpdated { get; set; }
         public string UpdatedBy { get; set; }
         public ProviderType ProviderType { get; set; }
+        public int? ProviderId { get; set; }
 
         // Bulk course upload
         public BulkUploadStatus BulkUploadStatus { get; set; }

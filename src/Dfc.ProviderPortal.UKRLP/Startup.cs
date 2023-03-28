@@ -20,18 +20,19 @@ namespace Dfc.ProviderPortal.UKRLP
 
         public IConfiguration Configuration { get; }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services
-                .AddMvcCore()
-                .AddNewtonsoftJson(option => option.SerializerSettings.ContractResolver = new DefaultContractResolver()
-                ).AddApiExplorer();
-
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Course Directory Providers API", Version = "v1" });
-            });
+        public void ConfigureServices(IServiceCollection services) 
+        { 
+            services.AddMvcCore()
+                .AddNewtonsoftJson(options => 
+                { 
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver(); 
+                }).AddApiExplorer(); 
+            
+            services.AddSwaggerGen(c => 
+            { 
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Course Directory Providers API", Version = "v1" }); 
+            }); 
+            services.AddSwaggerGenNewtonsoftSupport(); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

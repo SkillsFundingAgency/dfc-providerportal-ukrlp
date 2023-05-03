@@ -31,6 +31,9 @@
     },
     "providerPortalApplicationInsights": {
       "value": "__providerportalApplicationInsights__"
-    }
+    },
+    "appInsightsInstrumentationKey": {
+      "value": "__appInsightsInstrumentationKey__" 
+  }
   }
 }

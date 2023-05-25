@@ -24,12 +24,14 @@ trigger:
     include:
     - master
     - dev
+    - new-monitoring
 
 pr:
   branches:
     include:
     - master
     - dev
+    - new-monitoring
 
 steps:
 - task: UseGitVersion@5

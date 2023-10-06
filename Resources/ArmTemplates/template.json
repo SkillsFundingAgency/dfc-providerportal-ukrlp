@@ -194,7 +194,7 @@
     },
     "appInsightName": {
       "type": "string",
-      "FunctionAppInsightInstrumentationKey":"[parameters('appInsightsInstrumentationKey')]"
+      "value":"[variables('appInsightName')]"
     },
     "appInsightInstrumentationKey": {
       "type": "string",
